@@ -369,87 +369,223 @@ const StoreScreen = ({ onSalonClick, navTab, onNavigate }) => {
     }
   };
 
+  const getCatGlow = (c) => {
+    switch(c) {
+      case 'شعر': return 'rgba(22, 167, 126, 0.15)';
+      case 'مكياج': return 'rgba(74, 143, 231, 0.15)';
+      case 'أظافر': return 'rgba(224, 90, 107, 0.15)';
+      case 'سبا': return 'rgba(232, 125, 62, 0.15)';
+      default: return 'rgba(26, 26, 26, 0.15)';
+    }
+  };
+
   const filteredSalons = catFilter === 'الكل'
     ? SALONS
     : SALONS.filter(s => s.category.includes(catFilter) || (catFilter==='شعر' && s.category==='قص الشعر') || (catFilter==='سبا' && s.category==='عناية بالبشرة'));
 
   return (
     <RTL>
-      <div style={{ background:'#1A1A1A', flexShrink:0 }}>
+      <style>{`
+        .hover-scale-micro {
+          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-scale-micro:hover {
+          transform: scale(1.04);
+        }
+        .hover-card-elevation {
+          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease !important;
+        }
+        .hover-card-elevation:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 16px 36px rgba(0,0,0,0.06) !important;
+          border-color: #E2E2E6 !important;
+        }
+        .hover-card-elevation:hover .zoom-on-hover {
+          transform: scale(1.08);
+        }
+      `}</style>
+
+      <div style={{ background:'linear-gradient(135deg, #111115 0%, #1c1c24 100%)', flexShrink:0, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
         <StatusBar dark/>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px 18px' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px 20px', direction: 'rtl' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12, textAlign:'right' }}>
+            {/* Hamburger Menu (3 lines) */}
+            <svg width="22" height="16" viewBox="0 0 22 16" fill="none" style={{ cursor:'pointer' }}>
               <rect width="22" height="2.5" rx="1.5" fill="white"/>
               <rect y="6.75" width="16" height="2.5" rx="1.5" fill="white"/>
               <rect y="13.5" width="22" height="2.5" rx="1.5" fill="white"/>
             </svg>
-            <span style={{ fontSize:26, fontWeight:800, color:'#fff', letterSpacing:0, fontFamily:"'El Messiri', 'Amiri', serif" }}>دليل الصالونات</span>
+            <span style={{ fontSize:24, fontWeight:800, color:'#fff', fontFamily:"'El Messiri', 'Amiri', serif" }}>دليل الصالونات</span>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            {/* Chat Bubble Icon */}
+            <div style={{ width:40, height:40, borderRadius:'50%', background:'rgba(255,255,255,.08)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            {/* Notification Bell */}
+            <div style={{ width:40, height:40, borderRadius:'50%', background:'rgba(255,255,255,.08)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', position:'relative' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <div style={{ position:'absolute', top:10, right:10, width:8, height:8, borderRadius:'50%', background:'#E05A6B', border:'1.5px solid #1c1c24', boxShadow:'0 0 8px #E05A6B' }}/>
+            </div>
           </div>
         </div>
       </div>
 
       <div style={{ flex:1, overflowY:'auto', background:'#FAFAFA' }}>
         {/* STORIES BLOCK */}
-        <div style={{ padding:'16px 20px 16px', borderBottom:'1px solid #F2F2F2', background:'#fff', marginBottom: 12 }}>
+        <div style={{ padding:'16px 20px 18px', borderBottom:'1px solid #F2F2F5', background:'#fff', marginBottom: 14 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-            <span style={{ fontSize:17, fontWeight:800, fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>القصص اليومية</span>
-            <button style={{ display:'flex', alignItems:'center', gap:6, background:'linear-gradient(135deg,#D4A835,#E05A6B)', border:'none', borderRadius:22, padding:'7px 14px', cursor:'pointer', fontFamily:'inherit' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span style={{ fontSize:11, fontWeight:700, color:'white' }}>إضافة قصة</span>
+            <span style={{ fontSize:17, fontWeight:800, color:'#1A1A24', fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>القصص اليومية للصالونات</span>
+            <button style={{ display:'flex', alignItems:'center', gap:5, background:'rgba(212,168,53,0.08)', border:'1px solid rgba(212,168,53,0.4)', borderRadius:20, padding:'6px 12px', cursor:'pointer', transition:'all 0.2s' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D4A835" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span style={{ fontSize:11, fontWeight:800, color:'#D4A835', fontFamily:"'Cairo', sans-serif" }}>إضافة قصة</span>
             </button>
           </div>
-          <div dir="rtl" style={{ display:'flex', gap:10, paddingBottom:4, marginLeft:-20, overflowX:'auto' }}>
+          <div dir="rtl" style={{ display:'flex', gap:12, paddingBottom:4, marginLeft:-20, overflowX:'auto' }}>
             {STORIES.map(s=>(
               <div key={s.id} onClick={() => {
                 const foundSalon = SALONS.find(sal => sal.name === s.user);
                 if (foundSalon) onSalonClick(foundSalon);
-              }} style={{ flexShrink:0, width:92, cursor:'pointer' }}>
-                <div style={{ width:92, height:130, borderRadius:14, overflow:'hidden', position:'relative', marginBottom:6, border:'2px solid #EBEBEB' }}>
-                  <img src={s.img} alt={s.user} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
-                  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.45))' }}/>
-                  <div style={{ position:'absolute', bottom:6, right:6, width:26, height:26, borderRadius:'50%', border:'2px solid #D4A835', overflow:'hidden' }}>
-                    <img src={s.avatar} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+              }} style={{ flexShrink:0, width:92, cursor:'pointer' }} className="hover-scale-micro">
+                <div style={{
+                  width:92, height:130, borderRadius:18, overflow:'hidden', position:'relative', marginBottom:6,
+                  padding: 2.5,
+                  background: 'linear-gradient(135deg, #D4A835 0%, #E05A6B 50%, #9C59D9 100%)',
+                  boxShadow: '0 4px 15px rgba(224,90,107,0.12)'
+                }}>
+                  <div style={{ width:'100%', height:'100%', borderRadius:15, overflow:'hidden', background:'#fff', position:'relative' }}>
+                    <img src={s.img} alt={s.user} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+                    <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.6))' }}/>
+                    <div style={{ position:'absolute', bottom:6, right:6, width:26, height:26, borderRadius:'50%', border:'1.5px solid #fff', overflow:'hidden', boxShadow:'0 2px 6px rgba(0,0,0,0.15)' }}>
+                      <img src={s.avatar} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+                    </div>
                   </div>
                 </div>
-                <span style={{ fontSize:11, color:'#3A3A3A', fontWeight:600, direction:'rtl', display:'block', textAlign:'right' }}>{s.user}</span>
+                <span style={{ fontSize:11, color:'#2D2D3D', fontWeight:700, direction:'rtl', display:'block', textAlign:'center', fontFamily:"'Cairo', sans-serif" }}>{s.user}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Category filtering */}
-        <div dir="rtl" style={{ padding:'16px 20px 0', display:'flex', gap:8, overflowX:'auto', borderBottom:'1px solid #F5F5F5', paddingBottom:12, background:'#fff', marginBottom: 12 }}>
-          {['الكل','شعر','مكياج','أظافر','سبا'].map(c=>(
-            <button key={c} onClick={()=>setCatFilter(c)} style={{ padding:'8px 16px', borderRadius:22, flexShrink:0, background:catFilter===c?'#1A1A1A':'#fff', color:catFilter===c?'#fff':'#1A1A1A', border:catFilter===c?'none':'1.5px solid #E0E0E0', fontSize:13, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:6, fontFamily:'inherit' }}>
-              {getCatIcon(c)}
-              {c}
-            </button>
-          ))}
+        <div dir="rtl" style={{ padding:'16px 20px 16px', display:'flex', gap:8, overflowX:'auto', background:'#fff', borderBottom:'1px solid #F8F8F8', boxShadow:'0 4px 20px rgba(0,0,0,0.015)', marginBottom: 16 }}>
+          {['الكل','شعر','مكياج','أظافر','سبا'].map(c=>{
+            const isSelected = catFilter === c;
+            return (
+              <button key={c} onClick={()=>setCatFilter(c)} style={{
+                padding:'8px 18px',
+                borderRadius:24,
+                flexShrink:0,
+                background: isSelected ? '#1A1A1A' : '#FAFAFA',
+                color: isSelected ? '#fff' : '#5A5A6A',
+                border: isSelected ? 'none' : '1px solid #ECECEF',
+                fontSize:13,
+                fontWeight:700,
+                cursor:'pointer',
+                display:'flex',
+                alignItems:'center',
+                gap:6,
+                fontFamily:"'Cairo', sans-serif",
+                boxShadow: isSelected ? `0 6px 15px ${getCatGlow(c)}` : 'none',
+                transition: 'all 0.2s ease-out'
+              }}>
+                <span style={{ opacity: isSelected ? 1 : 0.7 }}>{getCatIcon(c)}</span>
+                {c}
+              </button>
+            );
+          })}
         </div>
 
         {/* Directory listings */}
-        <div style={{ padding:'16px 20px 24px' }}>
-          <span style={{ fontSize:17, fontWeight:800, display:'block', marginBottom:14, textAlign:'right', fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>الصالونات المتوفرة</span>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+        <div style={{ padding:'0 20px 30px' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+            <span style={{ fontSize:18, fontWeight:800, color:'#1A1A24', fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>الصالونات المتوفرة</span>
+            <span style={{ fontSize:12, color:'#9B9B9B', fontWeight:600 }}>{filteredSalons.length} مكان متوفر</span>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
             {filteredSalons.map(s=>(
-              <div key={s.id} onClick={()=>onSalonClick(s)} style={{ background:'#fff', borderRadius:14, overflow:'hidden', boxShadow:'0 2px 12px rgba(0,0,0,.06)', border:'1px solid #ECECEC', cursor:'pointer' }}>
-                <div style={{ height:116, background:'#EEE', overflow:'hidden' }}>
-                  <img src={s.img} alt={s.name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
-                </div>
-                <div style={{ padding:'10px 10px 12px', textAlign:'right' }}>
-                  <div style={{ fontSize:13, fontWeight:700, marginBottom:2 }}>{s.name}</div>
-                  <div style={{ fontSize:11, color:s.catColor, fontWeight:600, marginBottom:5 }}>{s.category}</div>
-                  <div style={{ display:'flex', alignItems:'center', gap:3, marginBottom:3, flexDirection:'row-reverse' }}>
-                    <span style={{ color:'#F5A623', fontSize:12 }}>★</span>
-                    <span style={{ fontSize:11, fontWeight:700 }}>{s.rating}</span>
-                    <span style={{ fontSize:10, color:'#9B9B9B' }}>({s.reviews})</span>
+              <div key={s.id} onClick={()=>onSalonClick(s)}
+                style={{
+                  background:'#fff',
+                  borderRadius:18,
+                  overflow:'hidden',
+                  boxShadow:'0 10px 30px rgba(0,0,0,0.025)',
+                  border:'1px solid #F0F0F3',
+                  cursor:'pointer',
+                  position: 'relative'
+                }}
+                className="hover-card-elevation">
+                
+                {/* Image Container with Floating Badges */}
+                <div style={{ height:124, background:'#F0F0F3', overflow:'hidden', position:'relative' }}>
+                  <img src={s.img} alt={s.name} style={{ width:'100%', height:'100%', objectFit:'cover', transition:'transform 0.3s ease' }} className="zoom-on-hover"/>
+                  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 40%)' }}/>
+                  
+                  {/* Floating Category Tag (Right Side) */}
+                  <div style={{
+                    position:'absolute',
+                    top:8,
+                    right:8,
+                    padding:'4px 10px',
+                    borderRadius:10,
+                    fontSize:10,
+                    fontWeight:800,
+                    fontFamily:"'Cairo', sans-serif",
+                    color: '#fff',
+                    background: s.catColor,
+                    boxShadow: `0 4px 10px ${s.catColor}33`,
+                  }}>
+                    {s.category}
                   </div>
-                  <div style={{ fontSize:10, color:'#9B9B9B', display:'flex', alignItems:'center', gap:3, flexDirection:'row-reverse' }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#9B9B9B"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                    {s.address}
+                  
+                  {/* Floating Rating Badge (Left Side) */}
+                  <div style={{
+                    position:'absolute',
+                    top:8,
+                    left:8,
+                    padding:'4px 8px',
+                    borderRadius:10,
+                    fontSize:10,
+                    fontWeight:800,
+                    color:'#fff',
+                    background:'rgba(26,26,26,0.65)',
+                    backdropFilter:'blur(8px)',
+                    display:'flex',
+                    alignItems:'center',
+                    gap:2,
+                    direction:'rtl'
+                  }}>
+                    <span style={{ color:'#F5A623', fontSize:11 }}>★</span>
+                    <span>{s.rating}</span>
                   </div>
                 </div>
+
+                {/* Details Section */}
+                <div style={{ padding:'12px 12px 14px', textAlign:'right' }}>
+                  <div style={{ fontSize:14, fontWeight:800, color:'#1A1A1A', marginBottom:6, fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>{s.name}</div>
+                  
+                  <div style={{ display:'flex', alignItems:'center', gap:4, flexDirection:'row-reverse', color:'#8A8A9A', fontSize:11, fontWeight:500 }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}>
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                      <circle cx="12" cy="9" r="2.5"/>
+                    </svg>
+                    <span style={{ textOverflow:'ellipsis', overflow:'hidden', whiteSpace:'nowrap' }}>{s.address}</span>
+                  </div>
+                  
+                  <div style={{ display:'flex', alignItems:'center', gap:4, flexDirection:'row-reverse', color:'#D4A835', fontSize:10, fontWeight:700, marginTop:5 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                      <polyline points="2 17 12 22 22 17"/>
+                      <polyline points="2 12 12 17 22 12"/>
+                    </svg>
+                    <span>تبعد {s.distance}</span>
+                  </div>
+                </div>
+
               </div>
             ))}
           </div>
