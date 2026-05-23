@@ -231,29 +231,44 @@ const FeedScreen = ({ onSalonClick, navTab, onNavigate }) => {
       </div>
 
       <div style={{ flex:1, overflowY:'auto', background:'#FAFAFA' }}>
+        <style>{`
+          .hover-scale-micro {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          .hover-scale-micro:hover {
+            transform: scale(1.04);
+          }
+        `}</style>
         {/* STORIES BLOCK */}
-        <div style={{ padding:'16px 20px 16px', borderBottom:'1px solid #F2F2F2', background:'#fff' }}>
+        <div style={{ padding:'16px 20px 18px', borderBottom:'1px solid #F2F2F5', background:'#fff', marginBottom: 14 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-            <span style={{ fontSize:17, fontWeight:800, fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>القصص اليومية</span>
-            <button style={{ display:'flex', alignItems:'center', gap:6, background:'linear-gradient(135deg,#D4A835,#E05A6B)', border:'none', borderRadius:22, padding:'7px 14px', cursor:'pointer', fontFamily:'inherit' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span style={{ fontSize:11, fontWeight:700, color:'white' }}>إضافة قصة</span>
+            <span style={{ fontSize:17, fontWeight:800, color:'#1A1A24', fontFamily:"'El Messiri', 'Cairo', sans-serif" }}>القصص اليومية للصالونات</span>
+            <button style={{ display:'flex', alignItems:'center', gap:5, background:'rgba(212,168,53,0.08)', border:'1px solid rgba(212,168,53,0.4)', borderRadius:20, padding:'6px 12px', cursor:'pointer', transition:'all 0.2s' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D4A835" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span style={{ fontSize:11, fontWeight:800, color:'#D4A835', fontFamily:"'Cairo', sans-serif" }}>إضافة قصة</span>
             </button>
           </div>
-          <div dir="rtl" style={{ display:'flex', gap:10, paddingBottom:4, marginLeft:-20, overflowX:'auto' }}>
+          <div dir="rtl" style={{ display:'flex', gap:12, paddingBottom:4, marginLeft:-20, overflowX:'auto' }}>
             {STORIES.map(s=>(
               <div key={s.id} onClick={() => {
                 const foundSalon = SALONS.find(sal => sal.name === s.user);
                 if (foundSalon) onSalonClick(foundSalon);
-              }} style={{ flexShrink:0, width:92, cursor:'pointer' }}>
-                <div style={{ width:92, height:130, borderRadius:14, overflow:'hidden', position:'relative', marginBottom:6, border:'2px solid #EBEBEB' }}>
-                  <img src={s.img} alt={s.user} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
-                  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.45))' }}/>
-                  <div style={{ position:'absolute', bottom:6, right:6, width:26, height:26, borderRadius:'50%', border:'2px solid #D4A835', overflow:'hidden' }}>
-                    <img src={s.avatar} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+              }} style={{ flexShrink:0, width:92, cursor:'pointer' }} className="hover-scale-micro">
+                <div style={{
+                  width:92, height:130, borderRadius:18, overflow:'hidden', position:'relative', marginBottom:6,
+                  padding: 2.5,
+                  background: 'linear-gradient(135deg, #D4A835 0%, #E05A6B 50%, #9C59D9 100%)',
+                  boxShadow: '0 4px 15px rgba(224,90,107,0.12)'
+                }}>
+                  <div style={{ width:'100%', height:'100%', borderRadius:15, overflow:'hidden', background:'#fff', position:'relative' }}>
+                    <img src={s.img} alt={s.user} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+                    <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.6))' }}/>
+                    <div style={{ position:'absolute', bottom:6, right:6, width:26, height:26, borderRadius:'50%', border:'1.5px solid #fff', overflow:'hidden', boxShadow:'0 2px 6px rgba(0,0,0,0.15)' }}>
+                      <img src={s.avatar} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+                    </div>
                   </div>
                 </div>
-                <span style={{ fontSize:11, color:'#3A3A3A', fontWeight:600, direction:'rtl', display:'block', textAlign:'right' }}>{s.user}</span>
+                <span style={{ fontSize:11, color:'#2D2D3D', fontWeight:700, direction:'rtl', display:'block', textAlign:'center', fontFamily:"'Cairo', sans-serif" }}>{s.user}</span>
               </div>
             ))}
           </div>
