@@ -51,7 +51,7 @@
     const NOOP = () => { };
 
     // ─── SHARED BRAND PIECES ─────────────────
-    const Mark = ({ s = 40, c = '#D4A040', r = '#E890A8' }) => (
+    const Mark = ({ s = 40, c = '#D4A040', r = '#FFFFFF' }) => (
       <svg width={s} height={s} viewBox="0 0 40 40">
         {[0, 45, 90, 135, 180, 225, 270, 315].map(a => {
           const rad = a * Math.PI / 180, x2 = 20 + 18 * Math.sin(rad), y2 = 20 - 18 * Math.cos(rad);
@@ -68,9 +68,9 @@
 
     const Brand = ({ dark = false }) => (
       <div dir="ltr" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Mark s={32} c={dark ? '#B8891C' : '#D4A040'} r={dark ? '#A04060' : '#E890A8'} />
+        <Mark s={32} c={dark ? '#B8891C' : '#D4A040'} r={dark ? '#B8891C' : '#FFFFFF'} />
         <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 300, fontStyle: 'italic', color: dark ? '#8A5810' : '#F0D080' }}>Ora</span>
-        <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 600, color: dark ? '#A04060' : '#E890A8', marginLeft: -6 }}>Glow</span>
+        <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 600, color: dark ? '#B8891C' : '#FFFFFF', marginLeft: -6 }}>Glow</span>
       </div>
     );
 
@@ -119,11 +119,11 @@
     // 2 — Search & Discovery
     const Ad2 = () => (
       <div style={{ width: 1080, height: 1080, background: '#060C08', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '70px 80px 60px', gap: 32, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', bottom: -50, left: '50%', transform: 'translateX(-50%)', width: 800, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse,rgba(43,173,124,.1) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -50, left: '50%', transform: 'translateX(-50%)', width: 800, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse,rgba(212,160,64,.1) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'rgba(43,173,124,.5)', letterSpacing: 4, marginBottom: 18, fontFamily: "'Cairo',sans-serif" }}>بحث ذكي · نتائج دقيقة</div>
+          <div style={{ fontSize: 13, color: 'rgba(212,160,64,.6)', letterSpacing: 4, marginBottom: 18, fontFamily: "'Cairo',sans-serif" }}>بحث ذكي · نتائج دقيقة</div>
           <div style={{ fontSize: 72, fontWeight: 900, color: 'white', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>اكتشفي صالونات</div>
-          <div style={{ fontSize: 72, fontWeight: 900, color: '#2BAD7C', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>ما كنتِ تعرفيها</div>
+          <div style={{ fontSize: 72, fontWeight: 900, color: '#D4A040', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>ما كنتِ تعرفيها</div>
         </div>
         <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="map" />} />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
@@ -136,12 +136,12 @@
     // 3 — Filter by nearest
     const Ad3 = () => (
       <div style={{ width: 1080, height: 1080, background: '#07080D', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '80px 90px', gap: 60, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, width: 500, height: 500, background: 'radial-gradient(circle,rgba(74,143,231,.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, width: 500, height: 500, background: 'radial-gradient(circle,rgba(212,160,64,.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="list" />} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 28, paddingLeft: 20 }}>
-          <div style={{ fontSize: 13, color: 'rgba(74,143,231,.55)', letterSpacing: 4, fontFamily: "'Cairo',sans-serif" }}>فلترة ذكية</div>
+          <div style={{ fontSize: 13, color: 'rgba(212,160,64,.6)', letterSpacing: 4, fontFamily: "'Cairo',sans-serif" }}>فلترة ذكية</div>
           <div style={{ fontSize: 68, fontWeight: 900, color: 'white', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>أقرب صالون</div>
-          <div style={{ fontSize: 68, fontWeight: 900, color: '#4A8FE7', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>إليك — دائماً</div>
+          <div style={{ fontSize: 68, fontWeight: 900, color: '#D4A040', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>إليك — دائماً</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 12 }}>
             {[{ icon: '📍', t: 'الأقرب إليك أولاً' },
             { icon: '💰', t: 'حسب السعر' },
@@ -161,11 +161,11 @@
     // 4 — All services (botox, filler, makeup)
     const Ad4 = () => (
       <div style={{ width: 1080, height: 1080, background: 'linear-gradient(160deg,#130810 0%,#0C0907 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '60px 80px', gap: 32, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 0, right: 0, width: 600, height: 600, background: 'radial-gradient(circle,rgba(192,96,122,.1) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 600, height: 600, background: 'radial-gradient(circle,rgba(212,160,64,.1) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'rgba(192,96,122,.55)', letterSpacing: 4, marginBottom: 16, fontFamily: "'Cairo',sans-serif" }}>كل الخدمات — مكان واحد</div>
+          <div style={{ fontSize: 13, color: 'rgba(212,160,64,.6)', letterSpacing: 4, marginBottom: 16, fontFamily: "'Cairo',sans-serif" }}>كل الخدمات — مكان واحد</div>
           <div style={{ fontSize: 66, fontWeight: 900, color: 'white', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>بوتوكس · فيلر</div>
-          <div style={{ fontSize: 66, fontWeight: 900, color: '#E890A8', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>مكياج · شعر · أظافر</div>
+          <div style={{ fontSize: 66, fontWeight: 900, color: '#D4A040', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>مكياج · شعر · أظافر</div>
         </div>
         <Phone sc={0.6} screen={<SalonProfileScreen salon={window.SALONS?.[0]} onBack={NOOP} onBook={NOOP} initialTab="services" />} />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
@@ -222,12 +222,12 @@
     // 7 — City-wide discovery
     const Ad7 = () => (
       <div style={{ width: 1080, height: 1080, background: '#06090C', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '80px 90px', gap: 60, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -80, left: -80, width: 500, height: 500, background: 'radial-gradient(circle,rgba(43,173,124,.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -80, left: -80, width: 500, height: 500, background: 'radial-gradient(circle,rgba(212,160,64,.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="map" />} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 26, paddingLeft: 20 }}>
-          <div style={{ fontSize: 13, color: 'rgba(43,173,124,.55)', letterSpacing: 4, fontFamily: "'Cairo',sans-serif" }}>مدينتك بالكامل</div>
+          <div style={{ fontSize: 13, color: 'rgba(212,160,64,.6)', letterSpacing: 4, fontFamily: "'Cairo',sans-serif" }}>مدينتك بالكامل</div>
           <div style={{ fontSize: 66, fontWeight: 900, color: 'white', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>من الناصرة</div>
-          <div style={{ fontSize: 66, fontWeight: 900, color: '#2BAD7C', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>لعكا وأكثر 📍</div>
+          <div style={{ fontSize: 66, fontWeight: 900, color: '#D4A040', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>لعكا وأكثر 📍</div>
           <div style={{ fontSize: 17, color: 'rgba(255,255,255,.4)', fontFamily: "'Cairo',sans-serif", lineHeight: 1.8, marginTop: 8 }}>
             الناصرة · أم الفحم · عكا<br />
             سخنين · باقة الغربية · وأكثر
@@ -235,7 +235,7 @@
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
             {['خريطة تفاعلية لجميع الصالونات', 'قائمة الأقرب إليك لحظة بلحظة', 'تحديث تلقائي لموقعك'].map((t, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2BAD7C', flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#D4A040', flexShrink: 0 }} />
                 <span style={{ fontSize: 15, color: 'rgba(255,255,255,.5)', fontFamily: "'Cairo',sans-serif" }}>{t}</span>
               </div>
             ))}
@@ -248,11 +248,11 @@
     // 8 — Salon deep-dive / Store
     const Ad8 = () => (
       <div style={{ width: 1080, height: 1080, background: '#0A060E', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '64px 80px', overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 70% 30%, rgba(156,89,217,.1) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 70% 30%, rgba(212,160,64,.1) 0%, transparent 60%)', pointerEvents: 'none' }} />
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'rgba(156,89,217,.55)', letterSpacing: 4, marginBottom: 16, fontFamily: "'Cairo',sans-serif" }}>ملف الصالون الكامل</div>
+          <div style={{ fontSize: 13, color: 'rgba(212,160,64,.6)', letterSpacing: 4, marginBottom: 16, fontFamily: "'Cairo',sans-serif" }}>ملف الصالون الكامل</div>
           <div style={{ fontSize: 68, fontWeight: 900, color: 'white', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>كل شيء عن الصالون</div>
-          <div style={{ fontSize: 68, fontWeight: 900, color: '#C080F0', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>قبل أن تذهبي 💜</div>
+          <div style={{ fontSize: 68, fontWeight: 900, color: '#D4A040', lineHeight: 1.1, fontFamily: "'Cairo',sans-serif" }}>قبل أن تذهبي 💜</div>
         </div>
         <Phone sc={0.62} screen={<SalonProfileScreen salon={window.SALONS?.[1]} onBack={NOOP} onBook={NOOP} initialTab="store" />} />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
@@ -272,12 +272,12 @@
     // 9 — Beauty is more
     const Ad9 = () => (
       <div style={{ width: 1080, height: 1080, background: '#0C0907', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '80px 90px', gap: 60, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', bottom: -100, right: -100, width: 600, height: 600, background: 'radial-gradient(circle,rgba(232,144,168,.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -100, right: -100, width: 600, height: 600, background: 'radial-gradient(circle,rgba(212,160,64,.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 28 }}>
-          <div style={{ fontSize: 13, color: 'rgba(232,144,168,.55)', letterSpacing: 4, fontFamily: "'Cairo',sans-serif" }}>لأن الجمال أوسع من ذلك</div>
+          <div style={{ fontSize: 13, color: 'rgba(212,160,64,.6)', letterSpacing: 4, fontFamily: "'Cairo',sans-serif" }}>لأن الجمال أوسع من ذلك</div>
           <div style={{ fontSize: 66, fontWeight: 900, color: 'white', lineHeight: 1.08, fontFamily: "'Cairo',sans-serif" }}>الجمال ليس</div>
           <div style={{ fontSize: 66, fontWeight: 900, color: 'white', lineHeight: 1.08, fontFamily: "'Cairo',sans-serif" }}>مجرد موعد</div>
-          <div style={{ fontSize: 66, fontWeight: 900, color: '#E890A8', lineHeight: 1.08, fontFamily: "'Cairo',sans-serif" }}>هو تجربة 🌹</div>
+          <div style={{ fontSize: 66, fontWeight: 900, color: '#D4A040', lineHeight: 1.08, fontFamily: "'Cairo',sans-serif" }}>هو تجربة 🌹</div>
           <div style={{ fontSize: 17, color: 'rgba(255,255,255,.4)', fontFamily: "'Cairo',sans-serif", lineHeight: 1.9, marginTop: 8 }}>
             اكتشفي صالونات جديدة<br />
             قارني الأسعار والتقييمات<br />
@@ -294,10 +294,10 @@
     const Ad10 = () => (
       <div style={{ width: 1080, height: 1080, background: 'linear-gradient(160deg,#150D10 0%,#0C0907 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px', gap: 44, overflow: 'hidden', position: 'relative' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(212,160,64,.1) 0%, transparent 65%)', pointerEvents: 'none' }} />
-        <Mark s={120} c='#D4A040' r='#E890A8' />
+        <Mark s={120} c='#D4A040' r='#FFFFFF' />
         <div style={{ textAlign: 'center' }}>
           <div dir="ltr" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 80, fontWeight: 300, fontStyle: 'italic', color: '#F0D080', letterSpacing: -2 }}>
-            Ora<span style={{ fontWeight: 600, color: '#E890A8' }}>Glow</span>
+            Ora<span style={{ fontWeight: 600, color: '#FFFFFF' }}>Glow</span>
           </div>
           <div style={{ fontSize: 18, color: 'rgba(240,216,152,.4)', letterSpacing: 5, fontFamily: "'Cairo',sans-serif", marginTop: 4 }}>أورا غلو</div>
         </div>
