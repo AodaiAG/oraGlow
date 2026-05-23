@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaloX — Interactive Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Amiri:ital,wght@0,400;0,700;1,400&family=El+Messiri:wght@400;500;600;700&family=Cinzel:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body {
+    background: radial-gradient(ellipse at 40% 30%, #2e2e3a 0%, #0d0d0f 100%);
+    font-family: 'Cairo', -apple-system, 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  #root {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 60px; /* Perfect offset for bottom navigation strip */
+  }
+  ::-webkit-scrollbar { display:none; }
+  * { scrollbar-width:none; }
+
+  @keyframes slideInRight {
+    from { transform:translateX(100%); opacity:0; }
+    to   { transform:translateX(0);    opacity:1; }
+  }
+  @keyframes slideInLeft {
+    from { transform:translateX(-40%); opacity:0; }
+    to   { transform:translateX(0);    opacity:1; }
+  }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to   { opacity:1; }
+  }
+  .screen-forward  { animation: slideInRight .32s cubic-bezier(.4,0,.2,1) both; }
+  .screen-back     { animation: slideInLeft  .28s cubic-bezier(.4,0,.2,1) both; }
+  .screen-fade     { animation: fadeIn       .28s ease both; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="salox-components.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── Scaler: fit phone to viewport ─────────────────────────
+const PHONE_W = 393;
+const PHONE_H = 852;
+
+const useScale = () => {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const calc = () => {
+      const s = Math.min(
+        (window.innerWidth  - 40) / PHONE_W,
+        (window.innerHeight - 140) / PHONE_H, // 140px safe vertical padding to keep container centered above bottom strip
+        1
+      );
+      setScale(Math.max(s, 0.4));
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+  return scale;
+};
+
+// ── Screen catalogue (for the picker strip) ───────────────
+const SCREEN_CATALOGUE = [
+  { key:'splash',           label:'Splash',          nav:'home',   extra:{} },
+  { key:'feed',             label:'Feed',             nav:'home',   extra:{} },
+  { key:'search-map',       label:'Search · Map',     nav:'search', extra:{ initialView:'map' } },
+  { key:'search-card',      label:'Search · Card',    nav:'search', extra:{ initialView:'card' } },
+  { key:'search-list',      label:'Search · List',    nav:'search', extra:{ initialView:'list' } },
+  { key:'search-filters',   label:'Filters',          nav:'search', extra:{ initialView:'map', initialShowFilters:true } },
+  { key:'salon-services',   label:'Salon · Services', nav:'home',   extra:{ initialTab:'services' } },
+  { key:'salon-store',      label:'Salon · Store',    nav:'home',   extra:{ initialTab:'store' } },
+  { key:'salon-details',    label:'Salon · Details',  nav:'home',   extra:{ initialTab:'details' } },
+  { key:'salon-posts',      label:'Salon · Posts',    nav:'home',   extra:{ initialTab:'posts' } },
+  { key:'professional',     label:'Select Pro',       nav:'home',   extra:{} },
+  { key:'confirmed',        label:'Confirmed',        nav:'home',   extra:{} },
+];
+
+// ── App ────────────────────────────────────────────────────
+const App = () => {
+  const scale = useScale();
+
+  const [screen,    setScreen]    = useState('splash');
+  const [screenKey, setScreenKey] = useState('splash');
+  const [navTab,    setNavTab]    = useState('home');
+  const [salon,     setSalon]     = useState(SALONS[0]);
+  const [service,   setService]   = useState(null);
+  const [pro,       setPro]       = useState(null);
+  const [animClass, setAnimClass] = useState('screen-fade');
+  const [extra,     setExtra]     = useState({});
+  const screenRef = useRef(null);
+
+  const go = (toScreen, direction='forward', extraProps={}) => {
+    const cls = direction === 'back' ? 'screen-back' : 'screen-forward';
+    setScreen(toScreen);
+    setExtra(extraProps);
+    setAnimClass(cls);
+    if (screenRef.current) {
+      screenRef.current.classList.remove(cls);
+      void screenRef.current.offsetWidth;
+      screenRef.current.classList.add(cls);
+    }
+  };
+
+  // Jump directly to a catalogued screen
+  const jumpTo = (entry) => {
+    setNavTab(entry.nav);
+    setAnimClass('screen-fade');
+    setExtra(entry.extra || {});
+    // derive base screen from key
+    const base = entry.key.startsWith('search') ? 'search'
+                : entry.key.startsWith('salon')  ? 'salon'
+                : entry.key;
+    setScreen(base);
+    setScreenKey(entry.key + Date.now()); // force remount
+  };
+
+  const handleNav = (tab) => {
+    setNavTab(tab);
+    if (tab === 'home')        go('feed',   'back');
+    else if (tab === 'search') go('search', 'forward');
+    else if (tab === 'store')  go('store',  'forward');
+    else                       go('feed',   'back');
+  };
+
+  const handleSalonClick = (s) => { setSalon(s); go('salon'); };
+  const handleBook = (svc) => { setService(svc); go('professional'); };
+  const handleSelectPro = (p) => { setPro(p); go('confirmed'); };
+
+  const renderScreen = () => {
+    switch (screen) {
+      case 'splash':
+        return <SplashScreen onContinue={() => { setNavTab('home'); go('feed'); }}/>;
+      case 'feed':
+        return <StoreScreen onSalonClick={handleSalonClick} navTab={navTab} onNavigate={handleNav}/>;
+      case 'store':
+        return <FeedScreen onSalonClick={handleSalonClick} navTab={navTab} onNavigate={handleNav}/>;
+      case 'search':
+        return <SearchScreen onSalonClick={handleSalonClick} navTab={navTab} onNavigate={handleNav} initialView={extra.initialView||'map'} initialShowFilters={extra.initialShowFilters||false}/>;
+      case 'salon':
+        return <SalonProfileScreen salon={salon} onBack={()=>go(navTab==='store'?'store':'feed','back')} onBook={handleBook} initialTab={extra.initialTab||'services'}/>;
+      case 'professional':
+        return <SelectProfessionalScreen onBack={()=>go('salon','back')} onSelect={handleSelectPro}/>;
+      case 'confirmed':
+        return <BookingConfirmedScreen professional={pro} salon={salon} onDone={()=>{ setNavTab('home'); go('feed','back'); }}/>;
+      default:
+        return <FeedScreen onSalonClick={handleSalonClick} navTab={navTab} onNavigate={handleNav}/>;
+    }
+  };
+
+  const activeKey = screenKey.replace(/\d+$/, '');
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+      {/* phone */}
+      <div style={{ transform:`scale(${scale})`, transformOrigin:'center center', transition:'transform .15s ease', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <PhoneFrame>
+          <div ref={screenRef} key={screenKey} className={animClass}
+            style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minHeight:0 }}>
+            {renderScreen()}
+          </div>
+        </PhoneFrame>
+      </div>
+
+      {/* screen picker strip */}
+      <div style={{
+        position:'fixed', bottom:0, left:0, right:0,
+        background:'rgba(12,12,14,.92)',
+        backdropFilter:'blur(12px)',
+        borderTop:'1px solid rgba(255,255,255,.08)',
+        padding:'10px 16px 14px',
+        display:'flex', gap:8, overflowX:'auto',
+        zIndex:1000,
+      }}>
+        <span style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,.35)', whiteSpace:'nowrap', alignSelf:'center', marginRight:4, flexShrink:0 }}>SCREENS</span>
+        {SCREEN_CATALOGUE.map(entry => {
+          const isActive = activeKey === entry.key;
+          return (
+            <button key={entry.key} onClick={()=>jumpTo(entry)} style={{
+              padding:'6px 14px',
+              borderRadius:20,
+              background: isActive ? '#fff' : 'rgba(255,255,255,.1)',
+              color: isActive ? '#1A1A1A' : 'rgba(255,255,255,.7)',
+              border:'none', fontSize:12, fontWeight: isActive ? 700 : 500,
+              cursor:'pointer', whiteSpace:'nowrap', flexShrink:0,
+              transition:'background .15s, color .15s',
+            }}>
+              {entry.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

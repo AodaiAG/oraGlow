@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OraGlow — Instagram Ads</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#111;overflow:hidden;font-family:'Cairo',sans-serif;-webkit-font-smoothing:antialiased;}
+  ::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- load actual app components -->
+<script type="text/babel" src="salox-components.jsx"></script>
+<!-- load design canvas -->
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+const {useState} = React;
+const NOOP = () => {};
+
+// ─── SHARED BRAND PIECES ─────────────────
+const Mark = ({s=40,c='#D4A040',r='#E890A8'}) => (
+  <svg width={s} height={s} viewBox="0 0 40 40">
+    {[0,45,90,135,180,225,270,315].map(a=>{
+      const rad=a*Math.PI/180, x2=20+18*Math.sin(rad), y2=20-18*Math.cos(rad);
+      return <line key={a} x1="20" y1="20" x2={x2} y2={y2} stroke={c} strokeWidth=".9" opacity=".55"/>;
+    })}
+    <circle cx="20" cy="20" r="13" fill="none" stroke={c} strokeWidth="1.2"/>
+    <circle cx="20" cy="20" r="5" fill={c}/>
+    {[0,90,180,270].map(a=>{
+      const rad=a*Math.PI/180, cx=20+13*Math.sin(rad), cy=20-13*Math.cos(rad);
+      return <circle key={a} cx={cx} cy={cy} r="2.5" fill={r}/>;
+    })}
+  </svg>
+);
+
+const Brand = ({dark=false}) => (
+  <div dir="ltr" style={{display:'flex',alignItems:'center',gap:10}}>
+    <Mark s={32} c={dark?'#B8891C':'#D4A040'} r={dark?'#A04060':'#E890A8'}/>
+    <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:26,fontWeight:300,fontStyle:'italic',color:dark?'#8A5810':'#F0D080'}}>Ora</span>
+    <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:26,fontWeight:600,color:dark?'#A04060':'#E890A8',marginLeft:-6}}>Glow</span>
+  </div>
+);
+
+const CTA = ({light=false}) => (
+  <div style={{background:light?'#1A1A1A':'rgba(212,160,64,.15)',border:`1.5px solid ${light?'transparent':'rgba(212,160,64,.4)'}`,borderRadius:32,padding:'12px 32px',cursor:'pointer'}}>
+    <span style={{color:light?'white':'#F0D080',fontSize:15,fontWeight:700,fontFamily:"'Cairo',sans-serif"}}>حملي التطبيق مجاناً</span>
+  </div>
+);
+
+// Phone wrapper — renders actual app screen, scaled down
+const Phone = ({screen, sc=0.58}) => {
+  const W = Math.round(393*sc), H = Math.round(852*sc);
+  return (
+    <div style={{width:W,height:H,borderRadius:Math.round(50*sc),overflow:'hidden',background:'#0C0C0C',position:'relative',boxShadow:'0 30px 80px rgba(0,0,0,.7)',flexShrink:0}}>
+      <div style={{position:'absolute',top:Math.round(12*sc),left:'50%',transform:'translateX(-50%)',width:Math.round(128*sc),height:Math.round(35*sc),background:'#0C0C0C',borderRadius:Math.round(20*sc),zIndex:200,pointerEvents:'none'}}/>
+      <div style={{width:393,height:852,transform:`scale(${sc})`,transformOrigin:'top left',pointerEvents:'none'}}>
+        {screen}
+      </div>
+    </div>
+  );
+};
+
+// ─── 10 AD COMPONENTS ────────────────────
+
+// 1 — Discovery hero: everything in one place
+const Ad1 = () => (
+  <div style={{width:1080,height:1080,background:'#0C0907',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'80px 90px',gap:60,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',top:-100,right:-100,width:600,height:600,borderRadius:'50%',background:'radial-gradient(circle,rgba(212,160,64,.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <div style={{flex:1,display:'flex',flexDirection:'column',gap:28}}>
+      <div style={{fontSize:13,color:'rgba(212,160,64,.55)',letterSpacing:4,fontFamily:"'Cairo',sans-serif"}}>أورا غلو — اكتشفي الجمال</div>
+      <div style={{fontSize:74,fontWeight:900,color:'white',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>كل ما يخص</div>
+      <div style={{fontSize:74,fontWeight:900,color:'white',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>جمالك</div>
+      <div style={{fontSize:74,fontWeight:900,color:'#D4A040',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>في مكان واحد</div>
+      <div style={{fontSize:17,color:'rgba(255,255,255,.4)',fontFamily:"'Cairo',sans-serif",lineHeight:1.8,marginTop:8}}>
+        شعر · مكياج · بوتوكس · فيلر<br/>أظافر · سبا · تدليك · وأكثر
+      </div>
+      <div style={{display:'flex',gap:16,marginTop:12,alignItems:'center'}}>
+        <Brand/>
+        <CTA/>
+      </div>
+    </div>
+    <Phone sc={0.6} screen={<FeedScreen onSalonClick={NOOP} navTab="home" onNavigate={NOOP}/>}/>
+  </div>
+);
+
+// 2 — Search & Discovery
+const Ad2 = () => (
+  <div style={{width:1080,height:1080,background:'#060C08',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'space-between',padding:'70px 80px 60px',gap:32,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',bottom:-50,left:'50%',transform:'translateX(-50%)',width:800,height:400,borderRadius:'50%',background:'radial-gradient(ellipse,rgba(43,173,124,.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <div style={{textAlign:'center'}}>
+      <div style={{fontSize:13,color:'rgba(43,173,124,.5)',letterSpacing:4,marginBottom:18,fontFamily:"'Cairo',sans-serif"}}>بحث ذكي · نتائج دقيقة</div>
+      <div style={{fontSize:72,fontWeight:900,color:'white',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>اكتشفي صالونات</div>
+      <div style={{fontSize:72,fontWeight:900,color:'#2BAD7C',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>ما كنتِ تعرفيها</div>
+    </div>
+    <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="map"/>}/>
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+      <div style={{fontSize:16,color:'rgba(255,255,255,.38)',fontFamily:"'Cairo',sans-serif"}}>خريطة تفاعلية لكل صالونات مدينتك</div>
+      <div style={{display:'flex',alignItems:'center',gap:20}}><Brand/><CTA/></div>
+    </div>
+  </div>
+);
+
+// 3 — Filter by nearest
+const Ad3 = () => (
+  <div style={{width:1080,height:1080,background:'#07080D',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'80px 90px',gap:60,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',top:0,left:0,width:500,height:500,background:'radial-gradient(circle,rgba(74,143,231,.08) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="list"/>}/>
+    <div style={{flex:1,display:'flex',flexDirection:'column',gap:28,paddingLeft:20}}>
+      <div style={{fontSize:13,color:'rgba(74,143,231,.55)',letterSpacing:4,fontFamily:"'Cairo',sans-serif"}}>فلترة ذكية</div>
+      <div style={{fontSize:68,fontWeight:900,color:'white',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>أقرب صالون</div>
+      <div style={{fontSize:68,fontWeight:900,color:'#4A8FE7',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>إليك — دائماً</div>
+      <div style={{display:'flex',flexDirection:'column',gap:14,marginTop:12}}>
+        {[{icon:'📍',t:'الأقرب إليك أولاً'},
+          {icon:'💰',t:'حسب السعر'},
+          {icon:'⭐',t:'الأعلى تقييماً'},
+          {icon:'🔖',t:'حسب نوع الخدمة'}].map((f,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:14,background:'rgba(255,255,255,.04)',borderRadius:14,padding:'12px 18px'}}>
+            <span style={{fontSize:20}}>{f.icon}</span>
+            <span style={{fontSize:16,color:'rgba(255,255,255,.6)',fontFamily:"'Cairo',sans-serif"}}>{f.t}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:12,display:'flex',gap:16,alignItems:'center'}}><Brand/><CTA/></div>
+    </div>
+  </div>
+);
+
+// 4 — All services (botox, filler, makeup)
+const Ad4 = () => (
+  <div style={{width:1080,height:1080,background:'linear-gradient(160deg,#130810 0%,#0C0907 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'space-between',padding:'60px 80px',gap:32,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',top:0,right:0,width:600,height:600,background:'radial-gradient(circle,rgba(192,96,122,.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <div style={{textAlign:'center'}}>
+      <div style={{fontSize:13,color:'rgba(192,96,122,.55)',letterSpacing:4,marginBottom:16,fontFamily:"'Cairo',sans-serif"}}>كل الخدمات — مكان واحد</div>
+      <div style={{fontSize:66,fontWeight:900,color:'white',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>بوتوكس · فيلر</div>
+      <div style={{fontSize:66,fontWeight:900,color:'#E890A8',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>مكياج · شعر · أظافر</div>
+    </div>
+    <Phone sc={0.6} screen={<SalonProfileScreen salon={window.SALONS?.[0]} onBack={NOOP} onBook={NOOP} initialTab="services"/>}/>
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+      <div style={{fontSize:16,color:'rgba(255,255,255,.38)',fontFamily:"'Cairo',sans-serif"}}>كل خدمات الجمال التي تحتاجينها في منصة واحدة</div>
+      <div style={{display:'flex',alignItems:'center',gap:20}}><Brand/><CTA/></div>
+    </div>
+  </div>
+);
+
+// 5 — Filter by price
+const Ad5 = () => (
+  <div style={{width:1080,height:1080,background:'#09090D',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'80px 90px',gap:60,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',bottom:0,right:0,width:500,height:500,background:'radial-gradient(circle,rgba(212,160,64,.08) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <div style={{flex:1,display:'flex',flexDirection:'column',gap:28}}>
+      <div style={{fontSize:13,color:'rgba(212,160,64,.55)',letterSpacing:4,fontFamily:"'Cairo',sans-serif"}}>اختاري ما يناسبك</div>
+      <div style={{fontSize:70,fontWeight:900,color:'white',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>فلتري حسب</div>
+      <div style={{fontSize:70,fontWeight:900,color:'#D4A040',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>السعر 💰</div>
+      <div style={{fontSize:22,color:'rgba(255,255,255,.45)',fontFamily:"'Cairo',sans-serif",marginTop:4}}>ميزانيتك، خياراتك</div>
+      <div style={{display:'flex',flexDirection:'column',gap:12,marginTop:16}}>
+        {[['اقتصادي','من $15'],['متوسط','من $40'],['فاخر','من $100']].map(([l,p],i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',background:'rgba(255,255,255,.05)',borderRadius:14,padding:'14px 20px',border:'1px solid rgba(212,160,64,.15)'}}>
+            <span style={{fontSize:16,color:'rgba(255,255,255,.6)',fontFamily:"'Cairo',sans-serif"}}>{l}</span>
+            <span style={{fontSize:16,color:'#D4A040',fontWeight:700,fontFamily:"'Cairo',sans-serif"}}>{p}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:16,display:'flex',gap:16,alignItems:'center'}}><Brand/><CTA/></div>
+    </div>
+    <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="map" initialShowFilters={true}/>}/>
+  </div>
+);
+
+// 6 — Comprehensive beauty guide
+const Ad6 = () => (
+  <div style={{width:1080,height:1080,background:'#0C0907',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'space-between',padding:'64px 80px',overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at center 30%, rgba(212,160,64,.09) 0%, transparent 60%)',pointerEvents:'none'}}/>
+    <div style={{textAlign:'center'}}>
+      <div style={{fontSize:13,color:'rgba(212,160,64,.5)',letterSpacing:4,marginBottom:16,fontFamily:"'Cairo',sans-serif"}}>دليلك الشامل للجمال</div>
+      <div style={{fontSize:68,fontWeight:900,color:'white',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>بحثك عن الجمال</div>
+      <div style={{fontSize:68,fontWeight:900,color:'#D4A040',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>ينتهي هنا ✨</div>
+    </div>
+    <div style={{display:'flex',gap:40,alignItems:'flex-end'}}>
+      <Phone sc={0.52} screen={<FeedScreen onSalonClick={NOOP} navTab="home" onNavigate={NOOP}/>}/>
+      <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="list"/>}/>
+      <Phone sc={0.52} screen={<SalonProfileScreen salon={window.SALONS?.[0]} onBack={NOOP} onBook={NOOP} initialTab="details"/>}/>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+      <div style={{fontSize:16,color:'rgba(255,255,255,.35)',fontFamily:"'Cairo',sans-serif"}}>اكتشف · قارن · اختار</div>
+      <div style={{display:'flex',alignItems:'center',gap:20}}><Brand/><CTA/></div>
+    </div>
+  </div>
+);
+
+// 7 — City-wide discovery
+const Ad7 = () => (
+  <div style={{width:1080,height:1080,background:'#06090C',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'80px 90px',gap:60,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',top:-80,left:-80,width:500,height:500,background:'radial-gradient(circle,rgba(43,173,124,.08) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <Phone sc={0.6} screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="map"/>}/>
+    <div style={{flex:1,display:'flex',flexDirection:'column',gap:26,paddingLeft:20}}>
+      <div style={{fontSize:13,color:'rgba(43,173,124,.55)',letterSpacing:4,fontFamily:"'Cairo',sans-serif"}}>مدينتك بالكامل</div>
+      <div style={{fontSize:66,fontWeight:900,color:'white',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>من الناصرة</div>
+      <div style={{fontSize:66,fontWeight:900,color:'#2BAD7C',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>لعكا وأكثر 📍</div>
+      <div style={{fontSize:17,color:'rgba(255,255,255,.4)',fontFamily:"'Cairo',sans-serif",lineHeight:1.8,marginTop:8}}>
+        الناصرة · أم الفحم · عكا<br/>
+        سخنين · باقة الغربية · وأكثر
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:8}}>
+        {['خريطة تفاعلية لجميع الصالونات','قائمة الأقرب إليك لحظة بلحظة','تحديث تلقائي لموقعك'].map((t,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:'#2BAD7C',flexShrink:0}}/>
+            <span style={{fontSize:15,color:'rgba(255,255,255,.5)',fontFamily:"'Cairo',sans-serif"}}>{t}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:12,display:'flex',gap:16,alignItems:'center'}}><Brand/><CTA/></div>
+    </div>
+  </div>
+);
+
+// 8 — Salon deep-dive / Store
+const Ad8 = () => (
+  <div style={{width:1080,height:1080,background:'#0A060E',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'space-between',padding:'64px 80px',overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 70% 30%, rgba(156,89,217,.1) 0%, transparent 60%)',pointerEvents:'none'}}/>
+    <div style={{textAlign:'center'}}>
+      <div style={{fontSize:13,color:'rgba(156,89,217,.55)',letterSpacing:4,marginBottom:16,fontFamily:"'Cairo',sans-serif"}}>ملف الصالون الكامل</div>
+      <div style={{fontSize:68,fontWeight:900,color:'white',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>كل شيء عن الصالون</div>
+      <div style={{fontSize:68,fontWeight:900,color:'#C080F0',lineHeight:1.1,fontFamily:"'Cairo',sans-serif"}}>قبل أن تذهبي 💜</div>
+    </div>
+    <Phone sc={0.62} screen={<SalonProfileScreen salon={window.SALONS?.[1]} onBack={NOOP} onBook={NOOP} initialTab="store"/>}/>
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+      <div style={{display:'flex',gap:28}}>
+        {['الخدمات والأسعار','ساعات العمل','تقييمات حقيقية','متجر المنتجات'].map((f,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:7}}>
+            <div style={{width:5,height:5,borderRadius:'50%',background:'#D4A040'}}/>
+            <span style={{fontSize:13,color:'rgba(255,255,255,.4)',fontFamily:"'Cairo',sans-serif"}}>{f}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:20}}><Brand/><CTA/></div>
+    </div>
+  </div>
+);
+
+// 9 — Beauty is more
+const Ad9 = () => (
+  <div style={{width:1080,height:1080,background:'#0C0907',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'80px 90px',gap:60,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',bottom:-100,right:-100,width:600,height:600,background:'radial-gradient(circle,rgba(232,144,168,.08) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <div style={{flex:1,display:'flex',flexDirection:'column',gap:28}}>
+      <div style={{fontSize:13,color:'rgba(232,144,168,.55)',letterSpacing:4,fontFamily:"'Cairo',sans-serif"}}>لأن الجمال أوسع من ذلك</div>
+      <div style={{fontSize:66,fontWeight:900,color:'white',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>الجمال ليس</div>
+      <div style={{fontSize:66,fontWeight:900,color:'white',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>مجرد موعد</div>
+      <div style={{fontSize:66,fontWeight:900,color:'#E890A8',lineHeight:1.08,fontFamily:"'Cairo',sans-serif"}}>هو تجربة 🌹</div>
+      <div style={{fontSize:17,color:'rgba(255,255,255,.4)',fontFamily:"'Cairo',sans-serif",lineHeight:1.9,marginTop:8}}>
+        اكتشفي صالونات جديدة<br/>
+        قارني الأسعار والتقييمات<br/>
+        تسوقي منتجات الجمال<br/>
+        تابعي أحدث صيحات الجمال
+      </div>
+      <div style={{marginTop:8,display:'flex',gap:16,alignItems:'center'}}><Brand/><CTA/></div>
+    </div>
+    <Phone sc={0.6} screen={<SalonProfileScreen salon={window.SALONS?.[0]} onBack={NOOP} onBook={NOOP} initialTab="posts"/>}/>
+  </div>
+);
+
+// 10 — Brand closer
+const Ad10 = () => (
+  <div style={{width:1080,height:1080,background:'linear-gradient(160deg,#150D10 0%,#0C0907 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'80px',gap:44,overflow:'hidden',position:'relative'}}>
+    <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at center, rgba(212,160,64,.1) 0%, transparent 65%)',pointerEvents:'none'}}/>
+    <Mark s={120} c='#D4A040' r='#E890A8'/>
+    <div style={{textAlign:'center'}}>
+      <div dir="ltr" style={{fontFamily:"'Cormorant Garamond',serif",fontSize:80,fontWeight:300,fontStyle:'italic',color:'#F0D080',letterSpacing:-2}}>
+        Ora<span style={{fontWeight:600,color:'#E890A8'}}>Glow</span>
+      </div>
+      <div style={{fontSize:18,color:'rgba(240,216,152,.4)',letterSpacing:5,fontFamily:"'Cairo',sans-serif",marginTop:4}}>أورا غلو</div>
+    </div>
+    <div style={{display:'flex',gap:14,flexWrap:'wrap',justifyContent:'center',maxWidth:700}}>
+      {['اكتشاف الصالونات','فلترة ذكية','بوتوكس وفيلر','مكياج احترافي','عروض الصالونات','تسوق المنتجات','الأقرب إليك','الأفضل سعراً'].map((f,i)=>(
+        <div key={i} style={{background:'rgba(255,255,255,.05)',borderRadius:24,padding:'9px 20px',border:'1px solid rgba(212,160,64,.18)'}}>
+          <span style={{fontSize:14,color:'rgba(255,255,255,.5)',fontFamily:"'Cairo',sans-serif"}}>{f}</span>
+        </div>
+      ))}
+    </div>
+    <div style={{fontSize:15,color:'rgba(255,255,255,.3)',letterSpacing:4,fontFamily:"'Cairo',sans-serif"}}>BEAUTY · DISCOVER · GLOW</div>
+    <div style={{background:'linear-gradient(135deg,#D4A040,#B8891C)',borderRadius:40,padding:'18px 60px',cursor:'pointer',boxShadow:'0 8px 32px rgba(212,160,64,.25)'}}>
+      <span style={{color:'#0C0907',fontSize:20,fontWeight:800,fontFamily:"'Cairo',sans-serif"}}>حملي التطبيق مجاناً</span>
+    </div>
+  </div>
+);
+
+// ─── MAIN APP: design canvas grid ────────
+const App = () => (
+  <DesignCanvas background="#111">
+    <DCSection id="discovery" title="Discovery & Search">
+      <DCArtboard id="ad1" label="01 — كل ما يخص جمالك" width={1080} height={1080}><Ad1/></DCArtboard>
+      <DCArtboard id="ad2" label="02 — اكتشفي صالونات جديدة" width={1080} height={1080}><Ad2/></DCArtboard>
+      <DCArtboard id="ad3" label="03 — أقرب صالون إليك" width={1080} height={1080}><Ad3/></DCArtboard>
+    </DCSection>
+    <DCSection id="services" title="Beauty Services">
+      <DCArtboard id="ad4" label="04 — بوتوكس · فيلر · مكياج" width={1080} height={1080}><Ad4/></DCArtboard>
+      <DCArtboard id="ad5" label="05 — فلتري حسب السعر" width={1080} height={1080}><Ad5/></DCArtboard>
+      <DCArtboard id="ad6" label="06 — بحثك ينتهي هنا" width={1080} height={1080}><Ad6/></DCArtboard>
+    </DCSection>
+    <DCSection id="location" title="Location & Explore">
+      <DCArtboard id="ad7" label="07 — من الناصرة لعكا" width={1080} height={1080}><Ad7/></DCArtboard>
+      <DCArtboard id="ad8" label="08 — كل شيء عن الصالون" width={1080} height={1080}><Ad8/></DCArtboard>
+    </DCSection>
+    <DCSection id="brand" title="Brand">
+      <DCArtboard id="ad9"  label="09 — الجمال تجربة" width={1080} height={1080}><Ad9/></DCArtboard>
+      <DCArtboard id="ad10" label="10 — OraGlow Brand" width={1080} height={1080}><Ad10/></DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
