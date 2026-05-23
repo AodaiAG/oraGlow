@@ -24,7 +24,7 @@ const DC = {
   postitText: '#5a4a2a',
   font: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
 };
-
+//
 // One-time CSS injection (classes are dc-prefixed so they don't collide with
 // the hosted design's own styles).
 if (typeof document !== 'undefined' && !document.getElementById('dc-styles')) {
@@ -153,7 +153,7 @@ function DesignCanvas({ children, minScale, maxScale, style }) {
         skipNextWrite.current = true;
         setState((s) => ({ ...s, sections: saved.sections }));
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => { didRead.current = true; if (!off) setReady(true); });
     const t = setTimeout(() => { if (!off) setReady(true); }, 150);
     return () => { off = true; clearTimeout(t); };
@@ -163,7 +163,7 @@ function DesignCanvas({ children, minScale, maxScale, style }) {
     if (!didRead.current) return;
     if (skipNextWrite.current) { skipNextWrite.current = false; return; }
     const t = setTimeout(() => {
-      window.omelette?.writeFile(DC_STATE_FILE, JSON.stringify({ sections: state.sections })).catch(() => {});
+      window.omelette?.writeFile(DC_STATE_FILE, JSON.stringify({ sections: state.sections })).catch(() => { });
     }, 250);
     return () => clearTimeout(t);
   }, [state.sections]);
@@ -278,14 +278,14 @@ function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
     }
     clearTimeout(saveT.current);
     saveT.current = setTimeout(() => {
-      try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch {}
+      try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch { }
     }, 200);
   }, [tfKey]);
 
   React.useLayoutEffect(() => {
     const flush = () => {
       clearTimeout(saveT.current);
-      try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch {}
+      try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch { }
     };
     try {
       const s = JSON.parse(localStorage.getItem(tfKey) || 'null');
@@ -293,7 +293,7 @@ function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
         tf.current = { x: s.x, y: s.y, scale: Math.min(maxScale, Math.max(minScale, s.scale)) };
         apply();
       }
-    } catch {}
+    } catch { }
     // Flush on pagehide and unmount so a reload within the 200ms debounce
     // window doesn't drop the last pan/zoom.
     window.addEventListener('pagehide', flush);
@@ -557,7 +557,7 @@ function DCArtboard() { return null; }
 // (same pipeline the host uses for page captures); HTML wraps it in a
 // minimal standalone document. Both are independent of viewport zoom.
 async function dcExport(node, w, h, name, kind) {
-  try { await document.fonts.ready; } catch {}
+  try { await document.fonts.ready; } catch { }
   const toDataURL = (url) => fetch(url).then((r) => r.blob()).then((b) => new Promise((res) => {
     const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => res(url); fr.readAsDataURL(b);
   })).catch(() => url);
@@ -574,7 +574,7 @@ async function dcExport(node, w, h, name, kind) {
       for (const m of css.match(/@font-face\s*{[^}]*}/g) || []) fontRules.push({ css: m, base: href });
       for (const m of css.matchAll(/@import\s+(?:url\()?['"]?([^'")\s;]+)/g))
         scrapeCss(new URL(m[1], href).href);
-    }).catch(() => {}));
+    }).catch(() => { }));
   };
   const walk = (rules, base) => {
     for (const r of rules) {
@@ -607,7 +607,7 @@ async function dcExport(node, w, h, name, kind) {
       const cs = getComputedStyle(src); let txt = '';
       for (let i = 0; i < cs.length; i++) txt += cs[i] + ':' + cs.getPropertyValue(cs[i]) + ';';
       dst.setAttribute('style', txt + 'animation:none;transition:none;');
-      if (src.tagName === 'CANVAS') try { const im = document.createElement('img'); im.src = src.toDataURL(); im.setAttribute('style', txt); return im; } catch {}
+      if (src.tagName === 'CANVAS') try { const im = document.createElement('img'); im.src = src.toDataURL(); im.setAttribute('style', txt); return im; } catch { }
     }
     for (let c = src.firstChild; c; c = c.nextSibling) dst.appendChild(cloneStyled(c));
     return dst;
@@ -762,7 +762,7 @@ function DCArtboardFrame({ sectionId, artboard, label, order, onRename, onReorde
       <div className="dc-header" data-omelette-chrome="" style={{ color: DC.label }} onPointerDown={(e) => e.stopPropagation()}>
         <div className="dc-labelrow">
           <div className="dc-grip" onPointerDown={onGripDown} title="Drag to reorder">
-            <svg width="9" height="13" viewBox="0 0 9 13" fill="currentColor"><circle cx="2" cy="2" r="1.1"/><circle cx="7" cy="2" r="1.1"/><circle cx="2" cy="6.5" r="1.1"/><circle cx="7" cy="6.5" r="1.1"/><circle cx="2" cy="11" r="1.1"/><circle cx="7" cy="11" r="1.1"/></svg>
+            <svg width="9" height="13" viewBox="0 0 9 13" fill="currentColor"><circle cx="2" cy="2" r="1.1" /><circle cx="7" cy="2" r="1.1" /><circle cx="2" cy="6.5" r="1.1" /><circle cx="7" cy="6.5" r="1.1" /><circle cx="2" cy="11" r="1.1" /><circle cx="7" cy="11" r="1.1" /></svg>
           </div>
           <div className="dc-labeltext" onClick={onFocus} title="Click to focus">
             <DCEditable value={label} onChange={onRename} onClick={(e) => e.stopPropagation()}
@@ -772,7 +772,7 @@ function DCArtboardFrame({ sectionId, artboard, label, order, onRename, onReorde
         <div className="dc-btns">
           <div ref={menuRef} style={{ position: 'relative' }}>
             <button className="dc-kebab" title="More" onClick={() => setMenuOpen((o) => !o)}>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="2.5" cy="6" r="1.1"/><circle cx="6" cy="6" r="1.1"/><circle cx="9.5" cy="6" r="1.1"/></svg>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="2.5" cy="6" r="1.1" /><circle cx="6" cy="6" r="1.1" /><circle cx="9.5" cy="6" r="1.1" /></svg>
             </button>
             {menuOpen && (
               <div className="dc-menu" onPointerDown={(e) => e.stopPropagation()}>
@@ -787,7 +787,7 @@ function DCArtboardFrame({ sectionId, artboard, label, order, onRename, onReorde
             )}
           </div>
           <button className="dc-expand" onClick={onFocus} title="Focus">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M7 1h4v4M5 11H1V7M11 1L7.5 4.5M1 11l3.5-3.5"/></svg>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M7 1h4v4M5 11H1V7M11 1L7.5 4.5M1 11l3.5-3.5" /></svg>
           </button>
         </div>
       </div>
@@ -857,10 +857,12 @@ function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
   const [ddOpen, setDd] = React.useState(false);
   const Arrow = ({ dir, onClick }) => (
     <button onClick={(e) => { e.stopPropagation(); onClick(); }}
-      style={{ position: 'absolute', top: '50%', [dir]: 28, transform: 'translateY(-50%)',
+      style={{
+        position: 'absolute', top: '50%', [dir]: 28, transform: 'translateY(-50%)',
         border: 'none', background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.9)',
         width: 44, height: 44, borderRadius: 22, fontSize: 18, cursor: 'pointer',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s' }}
+        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s'
+      }}
       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.18)')}
       onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.08)')}>
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -873,30 +875,38 @@ function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
   return ReactDOM.createPortal(
     <div onClick={() => ctx.setFocus(null)}
       onWheel={(e) => e.preventDefault()}
-      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(24,20,16,.6)', backdropFilter: 'blur(14px)',
-        fontFamily: DC.font, color: '#fff' }}>
+      style={{
+        position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(24,20,16,.6)', backdropFilter: 'blur(14px)',
+        fontFamily: DC.font, color: '#fff'
+      }}>
 
       {/* top bar: section dropdown (left) · close (right) */}
       <div onClick={(e) => e.stopPropagation()}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 72, display: 'flex', alignItems: 'flex-start', padding: '16px 20px 0', gap: 16 }}>
         <div style={{ position: 'relative' }}>
           <button onClick={() => setDd((o) => !o)}
-            style={{ border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', padding: '6px 8px',
-              borderRadius: 6, textAlign: 'left', fontFamily: 'inherit' }}>
+            style={{
+              border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', padding: '6px 8px',
+              borderRadius: 6, textAlign: 'left', fontFamily: 'inherit'
+            }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 18, fontWeight: 600, letterSpacing: -0.3 }}>{meta.title}</span>
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" style={{ opacity: .7 }}><path d="M2 4l3.5 3.5L9 4"/></svg>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" style={{ opacity: .7 }}><path d="M2 4l3.5 3.5L9 4" /></svg>
             </span>
             {meta.subtitle && <span style={{ display: 'block', fontSize: 13, opacity: .6, fontWeight: 400, marginTop: 2 }}>{meta.subtitle}</span>}
           </button>
           {ddOpen && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#2a251f', borderRadius: 8,
-              boxShadow: '0 8px 32px rgba(0,0,0,.4)', padding: 4, minWidth: 200, zIndex: 10 }}>
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#2a251f', borderRadius: 8,
+              boxShadow: '0 8px 32px rgba(0,0,0,.4)', padding: 4, minWidth: 200, zIndex: 10
+            }}>
               {sectionOrder.filter((sid) => sectionMeta[sid].slotIds.length).map((sid) => (
                 <button key={sid} onClick={() => { setDd(false); const f = sectionMeta[sid].slotIds[0]; if (f) ctx.setFocus(`${sid}/${f}`); }}
-                  style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
                     background: sid === sectionId ? 'rgba(255,255,255,.1)' : 'transparent', color: '#fff',
-                    padding: '8px 12px', borderRadius: 5, fontSize: 14, fontWeight: sid === sectionId ? 600 : 400, fontFamily: 'inherit' }}>
+                    padding: '8px 12px', borderRadius: 5, fontSize: 14, fontWeight: sid === sectionId ? 600 : 400, fontFamily: 'inherit'
+                  }}>
                   {sectionMeta[sid].title}
                 </button>
               ))}
@@ -907,8 +917,10 @@ function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
         <button onClick={() => ctx.setFocus(null)}
           onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.12)')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-          style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', width: 32, height: 32,
-            borderRadius: 16, fontSize: 20, cursor: 'pointer', lineHeight: 1, transition: 'background .12s' }}>×</button>
+          style={{
+            border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', width: 32, height: 32,
+            borderRadius: 16, fontSize: 20, cursor: 'pointer', lineHeight: 1, transition: 'background .12s'
+          }}>×</button>
       </div>
 
       {/* card centered, label + index below — only the card itself stops
@@ -917,8 +929,10 @@ function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
       <div
         style={{ position: 'absolute', top: 64, bottom: 56, left: 100, right: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
         <div onClick={(e) => e.stopPropagation()} style={{ width: width * scale, height: height * scale, position: 'relative' }}>
-          <div style={{ width, height, transform: `scale(${scale})`, transformOrigin: 'top left', background: '#fff', borderRadius: 2, overflow: 'hidden',
-            boxShadow: '0 20px 80px rgba(0,0,0,.4)' }}>
+          <div style={{
+            width, height, transform: `scale(${scale})`, transformOrigin: 'top left', background: '#fff', borderRadius: 2, overflow: 'hidden',
+            boxShadow: '0 20px 80px rgba(0,0,0,.4)'
+          }}>
             {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>{aid}</div>}
           </div>
         </div>
@@ -936,8 +950,10 @@ function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
         style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
         {peers.map((p, i) => (
           <button key={p} onClick={() => ctx.setFocus(`${sectionId}/${p}`)}
-            style={{ border: 'none', padding: 0, cursor: 'pointer', width: 6, height: 6, borderRadius: 3,
-              background: i === idx ? '#fff' : 'rgba(255,255,255,.3)' }} />
+            style={{
+              border: 'none', padding: 0, cursor: 'pointer', width: 6, height: 6, borderRadius: 3,
+              background: i === idx ? '#fff' : 'rgba(255,255,255,.3)'
+            }} />
         ))}
       </div>
     </div>,

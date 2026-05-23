@@ -205,7 +205,14 @@ const SplashScreen = ({ onContinue }) => (
 );
 
 // ─── FEED ────────────────────────────────────────────────
-const FeedScreen = ({ onSalonClick, navTab, onNavigate }) => {
+const FeedScreen = ({ onSalonClick, navTab, onNavigate, scrollY }) => {
+  const scrollRef = useRef(null);
+  useEffect(() => {
+    if (scrollRef.current && typeof scrollY === 'number') {
+      scrollRef.current.scrollTop = scrollY;
+    }
+  }, [scrollY]);
+
   return (
     <RTL>
       <div style={{ background:'#1A1A1A', flexShrink:0 }}>
@@ -230,7 +237,7 @@ const FeedScreen = ({ onSalonClick, navTab, onNavigate }) => {
         </div>
       </div>
 
-      <div style={{ flex:1, overflowY:'auto', background:'#FAFAFA' }}>
+      <div ref={scrollRef} style={{ flex:1, overflowY:'auto', background:'#FAFAFA' }}>
         <style>{`
           .hover-scale-micro {
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -332,8 +339,15 @@ const FeedScreen = ({ onSalonClick, navTab, onNavigate }) => {
 };
 
 // ─── STORE SCREEN (OLD HOME DIRECTORY CATALOG) ───────────
-const StoreScreen = ({ onSalonClick, navTab, onNavigate }) => {
+const StoreScreen = ({ onSalonClick, navTab, onNavigate, scrollY }) => {
   const [catFilter, setCatFilter] = useState('الكل');
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current && typeof scrollY === 'number') {
+      scrollRef.current.scrollTop = scrollY;
+    }
+  }, [scrollY]);
 
   const getCatIcon = (c) => {
     switch (c) {
@@ -450,7 +464,7 @@ const StoreScreen = ({ onSalonClick, navTab, onNavigate }) => {
         </div>
       </div>
 
-      <div style={{ flex:1, overflowY:'auto', background:'#FAFAFA' }}>
+      <div ref={scrollRef} style={{ flex:1, overflowY:'auto', background:'#FAFAFA' }}>
         {/* STORIES BLOCK */}
         <div style={{ padding:'16px 20px 18px', borderBottom:'1px solid #F2F2F5', background:'#fff', marginBottom: 14 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
