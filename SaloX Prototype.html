@@ -6,7 +6,7 @@
 <title>SaloX — Interactive Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Amiri:ital,wght@0,400;0,700;1,400&family=El+Messiri:wght@400;500;600;700&family=Cinzel:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=El+Messiri:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -17,6 +17,8 @@
     background: radial-gradient(ellipse at 40% 30%, #2e2e3a 0%, #0d0d0f 100%);
     font-family: 'Cairo', -apple-system, 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   #root {
     width: 100%;
@@ -181,25 +183,32 @@ const App = () => {
       {/* screen picker strip */}
       <div style={{
         position:'fixed', bottom:0, left:0, right:0,
-        background:'rgba(12,12,14,.92)',
-        backdropFilter:'blur(12px)',
-        borderTop:'1px solid rgba(255,255,255,.08)',
-        padding:'10px 16px 14px',
-        display:'flex', gap:8, overflowX:'auto',
+        background:'rgba(12,12,14,.95)',
+        backdropFilter:'blur(16px)',
+        borderTop:'1.5px solid rgba(212,168,53,.25)',
+        padding:'12px 20px 16px',
+        display:'flex', gap:10, overflowX:'auto',
         zIndex:1000,
+        fontFamily: "'Cinzel', 'Cormorant Garamond', serif",
+        boxShadow: '0 -10px 40px rgba(0,0,0,0.5)'
       }}>
-        <span style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,.35)', whiteSpace:'nowrap', alignSelf:'center', marginRight:4, flexShrink:0 }}>SCREENS</span>
+        <span style={{ fontSize:12, fontWeight:700, color:'#D4A835', whiteSpace:'nowrap', alignSelf:'center', marginRight:8, flexShrink:0, letterSpacing: '2px' }}>EXPLORE SCREENS</span>
         {SCREEN_CATALOGUE.map(entry => {
           const isActive = activeKey === entry.key;
           return (
             <button key={entry.key} onClick={()=>jumpTo(entry)} style={{
-              padding:'6px 14px',
-              borderRadius:20,
-              background: isActive ? '#fff' : 'rgba(255,255,255,.1)',
-              color: isActive ? '#1A1A1A' : 'rgba(255,255,255,.7)',
-              border:'none', fontSize:12, fontWeight: isActive ? 700 : 500,
+              padding:'8px 18px',
+              borderRadius:24,
+              background: isActive ? 'linear-gradient(135deg, #D4A835, #B8891C)' : 'rgba(255,255,255,.05)',
+              color: isActive ? '#0C0C0C' : 'rgba(255,255,255,.75)',
+              border: isActive ? 'none' : '1px solid rgba(255,255,255,.1)',
+              fontSize:11.5, fontWeight: isActive ? 800 : 600,
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
               cursor:'pointer', whiteSpace:'nowrap', flexShrink:0,
-              transition:'background .15s, color .15s',
+              transition:'all .25s cubic-bezier(0.4,0,0.2,1)',
+              fontFamily: 'inherit',
+              boxShadow: isActive ? '0 4px 15px rgba(212,168,53,0.3)' : 'none'
             }}>
               {entry.label}
             </button>

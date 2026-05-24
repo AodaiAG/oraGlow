@@ -55,7 +55,18 @@ const DAYS_AR = ['الإثنين','الثلاثاء','الأربعاء','الخ�
 
 // ─── RTL WRAPPER ─────────────────────────────────────────
 const RTL = ({ children, style={} }) => (
-  <div dir="rtl" style={{ direction:'rtl', fontFamily:"'Cairo', -apple-system, sans-serif", ...style, flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+  <div dir="rtl" style={{
+    direction:'rtl',
+    fontFamily:"'Cairo', -apple-system, sans-serif",
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
+    textRendering: 'optimizeLegibility',
+    ...style,
+    flex:1,
+    display:'flex',
+    flexDirection:'column',
+    overflow:'hidden'
+  }}>
     {children}
   </div>
 );
@@ -673,7 +684,7 @@ const SearchScreen = ({ onSalonClick, navTab, onNavigate, initialView='map', ini
     <RTL style={{ background:'#fff', position:'relative' }}>
       <StatusBar/>
       <div style={{ textAlign:'center', paddingBottom:10, flexShrink:0 }}>
-        <span style={{ fontSize:18, fontWeight:700 }}>بحث</span>
+        <span style={{ fontSize:20, fontWeight:800, fontFamily: "'El Messiri', sans-serif" }}>البحث عن صالون</span>
       </div>
 
       <div dir="rtl" style={{ padding:'0 16px 12px', display:'flex', gap:10, flexShrink:0, zIndex:10, position:'relative' }}>
@@ -1136,7 +1147,7 @@ const SelectProfessionalScreen = ({ onBack, onSelect }) => (
       <button onClick={onBack} style={{ width:36, height:36, borderRadius:10, background:'#F0F0F0', border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2.5" style={{ transform:'scaleX(-1)' }}><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
-      <span style={{ fontSize:18, fontWeight:700 }}>اختر المختص</span>
+      <span style={{ fontSize:19, fontWeight:800, fontFamily: "'El Messiri', sans-serif" }}>اختر خبيرة التجميل</span>
     </div>
     <div style={{ flex:1, overflowY:'auto', padding:'0 16px 24px' }}>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
@@ -1173,7 +1184,7 @@ const BookingConfirmedScreen = ({ professional, salon, onDone }) => (
       <div style={{ width:88, height:88, borderRadius:'50%', background:'#E8F8F0', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:24 }}>
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><path d="M20 6 9 17l-5-5"/></svg>
       </div>
-      <div style={{ fontSize:22, fontWeight:800, marginBottom:10, textAlign:'center' }}>تم الحجز بنجاح!</div>
+      <div style={{ fontSize:22, fontWeight:800, marginBottom:10, textAlign:'center', fontFamily: "'El Messiri', sans-serif" }}>تم الحجز بنجاح!</div>
       <div style={{ fontSize:14, color:'#6B6B6B', textAlign:'center', lineHeight:1.8, marginBottom:6 }}>
         تم حجز موعدك مع <strong>{professional?.name || 'المختص'}</strong><br/>بنجاح.
       </div>
