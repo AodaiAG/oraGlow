@@ -29,6 +29,19 @@
     background-size: 400% 400%;
     animation: gradientSweep 12s ease infinite;
   }
+
+  /* Shimmer sweep animation for CTA */
+  @keyframes shimmerSweep {
+    0% { background-position: -300px 0; }
+    100% { background-position: 300px 0; }
+  }
+
+  .shimmer-btn {
+    background: linear-gradient(90deg, #D4A835 0%, #F5D06A 35%, #B8891C 70%, #D4A835 100%) !important;
+    background-size: 600px 100% !important;
+    animation: shimmerSweep 3s infinite linear;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
 </style>
 </head>
 <body>
@@ -43,7 +56,7 @@ const { useState, useEffect, useRef, createContext, useContext } = React;
 const GOLD  = '#D4A835';
 const BLUSH = '#FFFFFF';
 const DARK  = '#1A1A24';
-const DURATION = 19; // 19-second loop
+const DURATION = 25; // 25-second loop
 const NOOP = () => {};
 
 // ─── HIGH-PERFORMANCE CUSTOM ANIMATION ENGINE ───────
@@ -208,6 +221,65 @@ const TouchIndicator = ({ x, y, start, end }) => {
   );
 };
 
+// ─── FLOATING CURSOR POINTER ─────────────────────────
+const FloatingCursor = ({ path }) => {
+  const time = useContext(TimeContext);
+  
+  if (!path || path.length === 0) return null;
+  
+  // Find coordinates
+  let x = 200;
+  let y = 600;
+  let opacity = 0;
+  let scale = 1;
+  
+  if (time < path[0].t) {
+    x = path[0].x;
+    y = path[0].y;
+    opacity = path[0].op ?? 0;
+    scale = path[0].sc ?? 1;
+  } else if (time >= path[path.length - 1].t) {
+    x = path[path.length - 1].x;
+    y = path[path.length - 1].y;
+    opacity = path[path.length - 1].op ?? 0;
+    scale = path[path.length - 1].sc ?? 1;
+  } else {
+    for (let i = 0; i < path.length - 1; i++) {
+      const start = path[i];
+      const end = path[i+1];
+      if (time >= start.t && time <= end.t) {
+        const t = (time - start.t) / (end.t - start.t);
+        // Smooth ease-in-out for translation, linear for scale/opacity
+        const easeT = Easing.easeOutCubic(t);
+        x = lerp(start.x, end.x, easeT);
+        y = lerp(start.y, end.y, easeT);
+        opacity = lerp(start.op ?? 1, end.op ?? 1, t);
+        scale = lerp(start.sc ?? 1, end.sc ?? 1, t);
+        break;
+      }
+    }
+  }
+  
+  if (opacity <= 0.01) return null;
+  
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x - 5,
+      top: y - 2,
+      transform: `scale(${scale})`,
+      zIndex: 99999,
+      pointerEvents: 'none',
+      transition: 'none'
+    }}>
+      <svg width="34" height="34" viewBox="0 0 28 28" style={{ filter: 'drop-shadow(0 3px 8px rgba(212,168,53,0.75))', transform: 'rotate(-10deg)' }}>
+        <path d="M5 2 L5 22 L11 16 L16.5 27 L20 25.5 L14.5 14.5 L21 14.5 Z" fill="#FFFFFF" stroke="#D4A835" strokeWidth="2" strokeLinejoin="round"/>
+      </svg>
+    </div>
+  );
+};
+
+
 // ─── ACTUAL APP SCREEN SCALING WRAPPER ───────────────
 const Phone = ({ screen, y=0, scale=1, opacity=1, sc=0.72, touches }) => {
   const W = Math.round(393 * sc);
@@ -267,9 +339,8 @@ const CTAScene = () => (
     <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', textAlign:'center', lineHeight:1.7, marginBottom:24, maxWidth:240, position:'relative', zIndex:2, fontFamily: "'Cairo', sans-serif" }}>
       اكتشفي الصالونات القريبة منكِ، قارني أسعار الخدمات، واحجزي خبيرتكِ المفضلة بسهولة.
     </p>
-    <div style={{
+    <div className="shimmer-btn" style={{
       width:'100%', padding:'12px 20px', borderRadius:24,
-      background:`linear-gradient(135deg, ${GOLD}, #B8891C)`,
       color:'#111', fontSize:14, fontWeight:800, textAlign:'center',
       boxShadow:'0 8px 25px rgba(212,168,53,0.3)', position:'relative', zIndex:2, cursor:'pointer'
     }}>
@@ -279,29 +350,103 @@ const CTAScene = () => (
   </div>
 );
 
+// ─── HIGH-END MODULAR KINETIC CAPTION CARD ────────────
+const CaptionCard = ({ title, subtitle, italicHighlight, start, end, time }) => {
+  const op = fadeInOut(start, end, 0.25, 0.25)(time);
+  
+  // Kinetic slide-up physics linked directly to the scene start
+  const y = interpolate([start, start + 0.35], [20, 0], Easing.easeOutCubic)(time);
+  const scale = interpolate([start, start + 0.35], [0.93, 1], Easing.easeOutBack)(time);
+  
+  return (
+    <div dir="rtl" style={{
+      position: 'absolute',
+      top: 50,
+      left: '50%',
+      transform: `translateX(-50%) translateY(${y}px) scale(${scale})`,
+      width: '90%',
+      padding: '16px 24px',
+      borderRadius: '24px',
+      background: 'linear-gradient(180deg, rgba(16, 16, 24, 0.88) 0%, rgba(8, 8, 12, 0.96) 100%)',
+      backdropFilter: 'blur(30px)',
+      WebkitBackdropFilter: 'blur(30px)',
+      // Delicate gold hairline frame all around perfectly framing centered text
+      border: `1px solid rgba(212, 168, 53, 0.32)`,
+      boxShadow: '0 20px 45px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 20px rgba(212, 168, 53, 0.15)',
+      textAlign: 'center', // Centered text alignment
+      opacity: op,
+      zIndex: 100,
+      fontFamily: "'El Messiri', 'Cairo', sans-serif",
+      transition: 'none'
+    }}>
+      
+      {/* Bold Editorial Main Header & calligraphic Amiri Highlight */}
+      <div style={{
+        fontSize: 22,
+        fontWeight: 800,
+        color: '#fff',
+        lineHeight: 1.35,
+        textShadow: '0 2px 10px rgba(0,0,0,0.7)',
+        fontFamily: "'El Messiri', sans-serif"
+      }}>
+        {title}
+        {italicHighlight && (
+          <>
+            <span className="serif" style={{
+              fontFamily: "'Amiri', serif",
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: 24,
+              color: GOLD,
+              textShadow: `0 0 10px ${GOLD}33`,
+              display: 'block',
+              marginTop: 6
+            }}>
+              {italicHighlight}
+            </span>
+          </>
+        )}
+      </div>
+
+      {/* Grid Partitioned Subtitle */}
+      {subtitle && (
+        <div style={{
+          fontSize: 13,
+          color: 'rgba(255,255,255,0.75)',
+          fontWeight: 500,
+          marginTop: 8,
+          lineHeight: 1.5,
+          fontFamily: "'Cairo', sans-serif",
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          paddingTop: 8
+        }}>
+          {subtitle}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── CORE SCENE TIMING & COMPOSITION ──────────────────
 const Scene = () => {
   const time = useContext(TimeContext);
 
   // Background color interpolation based on active animation segments
-  const bgHue = interpolate([0, 6, 12, 19], [340, 25, 210, 340])(time);
+  const bgHue = interpolate([0, 8.5, 16.0, 25.0], [340, 25, 210, 340])(time);
 
   // Phone scaling and translation keyframe animations
-  const phoneOpacity = interpolate([0, 1.4, 18, 19], [0, 1, 1, 0])(time);
-  const phoneY       = interpolate([0, 2, 15, 18, 19], [100, 0, 0, 0, -60], Easing.easeOutCubic)(time);
-  const phoneScale   = interpolate([1.4, 2.2, 15, 16.5, 18], [.78, 0.95, 0.95, 0.98, 0.98], Easing.easeOutCubic)(time);
+  const phoneOpacity = interpolate([0, 2.0, 2.6, 24.0, 25.0], [0, 0, 1, 1, 0])(time);
+  const phoneY       = interpolate([0, 2.6, 23.5, 24.2, 25.0], [100, 0, 0, 0, -60], Easing.easeOutCubic)(time);
+  const phoneScale   = interpolate([2.0, 2.6, 23.5, 24.2, 25.0], [.78, 0.95, 0.95, 0.98, 0.98], Easing.easeOutCubic)(time);
 
   // Active scene visibilities
-  const discoveryOp = fadeInOut(1.4, 4.8, .25, .25)(time);
-  const searchOp    = fadeInOut(4.6, 7.8, .25, .25)(time);
-  const feedOp      = fadeInOut(7.6, 10.8, .25, .25)(time);
-  const profileOp   = fadeInOut(10.6, 13.8, .25, .25)(time);
-  const proOp       = fadeInOut(13.6, 15.8, .25, .25)(time);
-  const ctaOp       = fadeInOut(15.6, 19.0, .25, .25)(time);
-
-  // Micro-scrolling variables linked to time
-  const feedScroll   = interpolate([1.8, 4.4], [0, 360])(time);
-  const socialScroll = interpolate([8.0, 10.4], [0, 420])(time);
+  const discoveryOp = fadeInOut(2.6, 7.6, .4, .2)(time);  // Search Map screen
+  const searchOp    = fadeInOut(7.4, 10.8, .4, .2)(time); // Nails Search List
+  const feedOp      = fadeInOut(10.6, 14.0, .4, .2)(time); // Lookbook Posts Profile
+  const profileOp   = fadeInOut(13.8, 17.2, .4, .2)(time); // Services Tab Profile
+  const storeOp     = fadeInOut(17.0, 20.4, .4, .2)(time); // Stylist selection
+  const proOp       = fadeInOut(20.2, 22.8, .4, .2)(time); // Booking Confirmed Screen
+  const ctaOp       = fadeInOut(21.6, 25.0, .4, .2)(time); // Brand Outro
 
   return (
     <>
@@ -328,24 +473,49 @@ const Scene = () => {
         );
       })}
 
-      {/* INTRO TITLE CAPTIONS (0.0s - 2.2s) */}
-      <Sprite start={0} end={2.2}>
+      {/* INTRO TITLE CAPTIONS (0.0s - 2.8s) */}
+      <Sprite start={0} end={2.8}>
         {() => {
-          const op = fadeInOut(0, 2.2, .4, .4)(time);
-          const y  = interpolate([0, 1.4], [50, 0], Easing.easeOutCubic)(time);
+          const op = fadeInOut(0, 2.8, .3, .3)(time);
+          const y  = interpolate([0, 1.8], [50, 0], Easing.easeOutCubic)(time);
           return (
-            <div dir="rtl" style={{ position:'absolute', top:'28%', left:0, right:0, textAlign:'center', opacity:op, transform:`translateY(${y}px)`, padding:'0 24px', fontFamily:"'El Messiri','Cairo',sans-serif" }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
-                <span style={{ fontSize: 28, fontWeight: 700, color: GOLD, letterSpacing: 2, fontFamily: "'El Messiri', sans-serif", textShadow: '0 4px 15px rgba(212,168,53,0.35)' }}>أورا غلو</span>
-                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 24 }}>·</span>
+            <div dir="rtl" style={{
+              position:'absolute', top:'22%', left:'50%', transform:`translate(-50%, calc(-50% + ${y}px))`, width:'88%',
+              padding:'44px 28px', borderRadius:'32px',
+              background:'linear-gradient(180deg, rgba(14,14,20,0.92) 0%, rgba(6,6,8,0.96) 100%)',
+              backdropFilter:'blur(24px)',
+              border:`1.2px solid rgba(212,168,53,0.38)`,
+              boxShadow:'0 30px 80px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 25px rgba(212,168,53,0.12)',
+              textAlign:'center', opacity:op, zIndex:30, fontFamily:"'El Messiri','Cairo',sans-serif"
+            }}>
+              {/* Top Accent Star */}
+              <div style={{ marginBottom: 22, display: 'flex', justifyContent: 'center' }}>
+                <svg width="22" height="22" viewBox="0 0 22 22" style={{ filter: 'drop-shadow(0 0 6px rgba(212,168,53,0.85))' }}>
+                  <path d="M11 0 L14 8 L22 11 L14 14 L11 22 L8 14 L0 11 L8 8 Z" fill={GOLD}/>
+                </svg>
+              </div>
+
+              {/* ORA GLOW - Spaced Brand Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
                 <div dir="ltr" style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 34, fontWeight: 300, fontStyle: 'italic', color: '#F0D080' }}>Ora</span>
-                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 34, fontWeight: 600, color: '#FFFFFF', marginLeft: 2 }}>Glow</span>
+                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 40, fontWeight: 300, fontStyle: 'italic', color: '#F0D080', letterSpacing: '8px', textShadow: '0 0 8px rgba(240,208,128,0.2)' }}>ORA</span>
+                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 40, fontWeight: 600, color: '#FFFFFF', letterSpacing: '8px', marginLeft: '4px', textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>GLOW</span>
                 </div>
               </div>
-              <div style={{ fontSize:36, fontWeight:700, color:'#fff', lineHeight:1.35, fontFamily: "'El Messiri', sans-serif", textShadow: '0 6px 25px rgba(0,0,0,0.6)' }}>
-                اكتشفي، قارني، واحجزي<br/>
-                <span className="serif" style={{ fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500, color:GOLD, textShadow: `0 0 12px ${GOLD}66` }}>أفضل الصالونات القريبة منكِ</span>
+
+              {/* Gold Divider */}
+              <div style={{ width: '70px', height: '1.2px', background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`, margin: '0 auto 24px' }} />
+
+              {/* Calligraphic Copy Hook */}
+              <div style={{ fontSize:20, fontWeight:600, color:'rgba(255,255,255,0.95)', letterSpacing: 0.8, marginBottom: 12, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                متحيرة عند مين تعملي أظافركِ؟
+              </div>
+              <div className="serif" style={{
+                fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500,
+                fontSize: 32, color: GOLD, lineHeight: 1.35,
+                textShadow: `0 0 15px rgba(212,168,53,0.4)`
+              }}>
+                وتعبتي وانتي تدوري ؟
               </div>
             </div>
           );
@@ -355,47 +525,75 @@ const Scene = () => {
       {/* DYNAMIC SCREEN PHONE MOCKUP RENDERING THE REAL APP SCREENS */}
       <div style={{ opacity:phoneOpacity }}>
         
-        {/* 1. Vetted Salon Catalog (Home screen) */}
-        <Sprite start={1.4} end={4.8}>
+        {/* 1. Search Map Screen with modal overlay controls */}
+        <Sprite start={2.6} end={7.6}>
           <Phone y={phoneY} scale={phoneScale} opacity={discoveryOp}
-            screen={<StoreScreen onSalonClick={NOOP} navTab="home" onNavigate={NOOP} scrollY={feedScroll}/>}
-            touches={<TouchIndicator x={275} y={810} start={4.0} end={4.6}/>}
+            screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="map" initialShowFilters={time >= 4.4} initialFilterCats={time >= 5.6 ? ['أظافر'] : []} />}
+            touches={
+              <>
+                <TouchIndicator x={345} y={115} start={3.4} end={4.0}/>
+                <TouchIndicator x={110} y={520} start={5.2} end={5.8}/>
+                <TouchIndicator x={130} y={790} start={6.6} end={7.2}/>
+                <FloatingCursor path={[
+                  { t: 2.6, x: 200, y: 600, op: 0 },
+                  { t: 2.8, x: 200, y: 600, op: 1 },
+                  { t: 3.4, x: 345, y: 115, op: 1, sc: 1 },
+                  { t: 3.7, x: 345, y: 115, op: 1, sc: 0.8 },
+                  { t: 4.0, x: 345, y: 115, op: 1, sc: 1 },
+                  { t: 5.2, x: 110, y: 520, op: 1, sc: 1 },
+                  { t: 5.5, x: 110, y: 520, op: 1, sc: 0.8 },
+                  { t: 5.8, x: 110, y: 520, op: 1, sc: 1 },
+                  { t: 6.6, x: 130, y: 790, op: 1, sc: 1 },
+                  { t: 6.9, x: 130, y: 790, op: 1, sc: 0.8 },
+                  { t: 7.2, x: 130, y: 790, op: 1, sc: 1 },
+                  { t: 7.6, x: 200, y: 800, op: 0 }
+                ]} />
+              </>
+            }
           />
         </Sprite>
 
-        {/* 2. Interactive Map Search screen */}
-        <Sprite start={4.6} end={7.8}>
+        {/* 2. Nails Search List Results Screen */}
+        <Sprite start={7.4} end={10.8}>
           <Phone y={phoneY} scale={phoneScale} opacity={searchOp}
-            screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="card" />}
-            touches={<TouchIndicator x={196} y={810} start={7.0} end={7.6}/>}
+            screen={<SearchScreen onSalonClick={NOOP} navTab="search" onNavigate={NOOP} initialView="list" initialFilterCats={['أظافر']} />}
+            touches={<TouchIndicator x={200} y={270} start={8.8} end={9.4}/>}
           />
         </Sprite>
 
-        {/* 3. Social Media Lookbook Feed */}
-        <Sprite start={7.6} end={10.8}>
+        {/* 3. Portfolio Lookbook Grid (Nail Art Profile) */}
+        <Sprite start={10.6} end={14.0}>
           <Phone y={phoneY} scale={phoneScale} opacity={feedOp}
-            screen={<FeedScreen onSalonClick={NOOP} navTab="store" onNavigate={NOOP} scrollY={socialScroll}/>}
-            touches={<TouchIndicator x={68} y={730} start={10.0} end={10.6}/>}
+            screen={<SalonProfileScreen salon={SALONS[0]} onBack={NOOP} onBook={NOOP} initialTab="posts" />}
+            touches={<TouchIndicator x={340} y={310} start={12.0} end={12.6}/>}
           />
         </Sprite>
 
-        {/* 4. Vetted Salon Profile sanctuary screen */}
-        <Sprite start={10.6} end={13.8}>
+        {/* 4. Services Prices Tab (Nail Art Services) */}
+        <Sprite start={13.8} end={17.2}>
           <Phone y={phoneY} scale={phoneScale} opacity={profileOp}
-            screen={<SalonProfileScreen salon={SALONS[0]} onBack={NOOP} onBook={NOOP} initialTab="services"/>}
-            touches={<TouchIndicator x={60} y={480} start={13.0} end={13.6}/>}
+            screen={<SalonProfileScreen salon={SALONS[0]} onBack={NOOP} onBook={NOOP} initialTab="services" />}
+            touches={<TouchIndicator x={60} y={390} start={15.2} end={15.8}/>}
           />
         </Sprite>
 
-        {/* 5. Expert Stylist selection */}
-        <Sprite start={13.6} end={15.8}>
-          <Phone y={phoneY} scale={phoneScale} opacity={proOp}
+        {/* 5. Stylist Selection Screen */}
+        <Sprite start={17.0} end={20.4}>
+          <Phone y={phoneY} scale={phoneScale} opacity={storeOp}
             screen={<SelectProfessionalScreen onBack={NOOP} onSelect={NOOP}/>}
+            touches={<TouchIndicator x={290} y={520} start={18.4} end={19.0}/>}
           />
         </Sprite>
 
-        {/* 6. Brand Closer page */}
-        <Sprite start={15.6} end={19.0}>
+        {/* 6. Booking Confirmed Screen */}
+        <Sprite start={20.2} end={22.8}>
+          <Phone y={phoneY} scale={phoneScale} opacity={proOp}
+            screen={<BookingConfirmedScreen professional={{ name: 'لينا' }} salon={SALONS[0]} onDone={NOOP} />}
+          />
+        </Sprite>
+
+        {/* 7. Brand Outro closer */}
+        <Sprite start={21.6} end={25.0}>
           <Phone y={phoneY} scale={phoneScale} opacity={ctaOp}
             screen={<CTAScene/>}
           />
@@ -405,123 +603,85 @@ const Scene = () => {
 
       {/* DYNAMIC SCENE CAPTIONS (RTL ARABIC) */}
       
-      {/* 1. Discovery Caption (2.4s - 4.6s) */}
-      <Sprite start={2.4} end={4.6}>
-        {() => {
-          const op = fadeInOut(2.4, 4.6, .3, .25)(time);
-          return (
-            <div dir="rtl" style={{
-              position:'absolute', top:50, left:'50%', transform:'translateX(-50%)', width:'88%',
-              padding:'14px 20px', borderRadius:'22px', background:'rgba(12,12,18,0.82)', backdropFilter:'blur(16px)',
-              border:`1px solid rgba(212,168,53,0.25)`, boxShadow:'0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 15px rgba(212,168,53,0.1)',
-              textAlign:'center', opacity:op, zIndex:30, fontFamily:"'El Messiri','Cairo',sans-serif"
-            }}>
-              <div style={{ fontSize:14, fontWeight:700, color:GOLD, letterSpacing:2, marginBottom:4 }}>أورا غلو · قريباً جداً</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.35, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                كل صالونات التجميل في مدينتكِ<br/>
-                <span className="serif" style={{ fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500, color:GOLD, textShadow: `0 0 8px ${GOLD}44` }}>في تطبيق واحد سهل وسريع.</span>
-              </div>
-            </div>
-          );
-        }}
+      {/* 1. problem dilemma is handled in the intro splash (0s - 2.8s) */}
+
+      {/* 2. Search Map (2.8s - 7.2s) */}
+      <Sprite start={2.8} end={7.2}>
+        {() => (
+          <CaptionCard
+            title="افتحي خريطة الصالونات التفاعلية"
+            italicHighlight="واكتشفي الأماكن المتاحة حولكِ."
+            start={2.8} end={7.2} time={time}
+          />
+        )}
       </Sprite>
 
-      {/* 2. Interactive Map Caption (4.8s - 7.6s) */}
-      <Sprite start={4.8} end={7.6}>
-        {() => {
-          const op = fadeInOut(4.8, 7.6, .3, .25)(time);
-          return (
-            <div dir="rtl" style={{
-              position:'absolute', top:50, left:'50%', transform:'translateX(-50%)', width:'88%',
-              padding:'14px 20px', borderRadius:'22px', background:'rgba(12,12,18,0.82)', backdropFilter:'blur(16px)',
-              border:`1px solid rgba(212,168,53,0.25)`, boxShadow:'0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 15px rgba(212,168,53,0.1)',
-              textAlign:'center', opacity:op, zIndex:30, fontFamily:"'El Messiri','Cairo',sans-serif"
-            }}>
-              <div style={{ fontSize:14, fontWeight:700, color:GOLD, letterSpacing:2, marginBottom:4 }}>بحث ذكي على الخريطة</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.35, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                ابحثي على الخريطة التفاعلية<br/>
-                <span className="serif" style={{ fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500, color:GOLD, textShadow: `0 0 8px ${GOLD}44` }}>وشاهدي الصالونات المتاحة حالاً.</span>
-              </div>
-            </div>
-          );
-        }}
+      {/* 3. Nails Search List (7.6s - 10.4s) */}
+      <Sprite start={7.6} end={10.4}>
+        {() => (
+          <CaptionCard
+            title="فلنختر فئة الأظافر في الفلاتر"
+            italicHighlight="لتظهر الصالونات المتخصصة القريبة منكِ."
+            start={7.6} end={10.4} time={time}
+          />
+        )}
       </Sprite>
 
-      {/* 3. Social Feed Caption (7.8s - 10.6s) */}
-      <Sprite start={7.8} end={10.6}>
-        {() => {
-          const op = fadeInOut(7.8, 10.6, .3, .25)(time);
-          return (
-            <div dir="rtl" style={{
-              position:'absolute', top:50, left:'50%', transform:'translateX(-50%)', width:'88%',
-              padding:'14px 20px', borderRadius:'22px', background:'rgba(12,12,18,0.82)', backdropFilter:'blur(16px)',
-              border:`1px solid rgba(212,168,53,0.25)`, boxShadow:'0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 15px rgba(212,168,53,0.1)',
-              textAlign:'center', opacity:op, zIndex:30, fontFamily:"'El Messiri','Cairo',sans-serif"
-            }}>
-              <div style={{ fontSize:14, fontWeight:700, color:GOLD, letterSpacing:2, marginBottom:4 }}>سوشال ميديا للجمال</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.35, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                أول سوشال ميديا متخصص فقط<br/>
-                <span className="serif" style={{ fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500, color:GOLD, textShadow: `0 0 8px ${GOLD}44` }}>في خدمات وصالونات التجميل.</span>
-              </div>
-            </div>
-          );
-        }}
-      </Sprite>
-
-      {/* 4. Profile Services Caption (10.8s - 13.6s) */}
+      {/* 4. Lookbook Portfolio (10.8s - 13.6s) */}
       <Sprite start={10.8} end={13.6}>
-        {() => {
-          const op = fadeInOut(10.8, 13.6, .3, .25)(time);
-          return (
-            <div dir="rtl" style={{
-              position:'absolute', top:50, left:'50%', transform:'translateX(-50%)', width:'88%',
-              padding:'14px 20px', borderRadius:'22px', background:'rgba(12,12,18,0.82)', backdropFilter:'blur(16px)',
-              border:`1px solid rgba(212,168,53,0.25)`, boxShadow:'0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 15px rgba(212,168,53,0.1)',
-              textAlign:'center', opacity:op, zIndex:30, fontFamily:"'El Messiri','Cairo',sans-serif"
-            }}>
-              <div style={{ fontSize:14, fontWeight:700, color:GOLD, letterSpacing:2, marginBottom:4 }}>شفافية الأسعار والخدمات</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.35, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                قارني أسعار الخدمات الحقيقية<br/>
-                <span className="serif" style={{ fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500, color:GOLD, textShadow: `0 0 8px ${GOLD}44` }}>واحجزي موعدكِ مباشرة مع الصالون.</span>
-              </div>
-            </div>
-          );
-        }}
+        {() => (
+          <CaptionCard
+            title="تصفحي ألبومات أعمالهم الحقيقية بكل راحة"
+            italicHighlight="وشاهدي النتائج والجودة بنفسكِ."
+            start={10.8} end={13.6} time={time}
+          />
+        )}
       </Sprite>
 
-      {/* 5. Expert Specialists Caption (13.8s - 15.8s) */}
-      <Sprite start={13.8} end={15.8}>
-        {() => {
-          const op = fadeInOut(13.8, 15.8, .25, .25)(time);
-          const scale = interpolate([13.8, 14.4], [.8, 1], Easing.easeOutBack)(time);
-          return (
-            <div dir="rtl" style={{
-              position:'absolute', top:50, left:'50%', transform:`translateX(-50%) scale(${scale})`, width:'88%',
-              padding:'14px 20px', borderRadius:'22px', background:'rgba(12,12,18,0.82)', backdropFilter:'blur(16px)',
-              border:`1px solid rgba(212,168,53,0.25)`, boxShadow:'0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 15px rgba(212,168,53,0.1)',
-              textAlign:'center', opacity:op, zIndex:30, fontFamily:"'El Messiri','Cairo',sans-serif"
-            }}>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.35, marginBottom:4, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                اختاري <span className="serif" style={{ fontFamily:"'Amiri',serif", fontStyle:'italic', fontWeight:500, color:GOLD, textShadow: `0 0 8px ${GOLD}44` }}>خبيرتكِ المفضلة</span>
-              </div>
-              <div style={{ fontSize:13, color:'rgba(255,255,255,.75)', fontWeight:600 }}>احجزي مع خبيرتكِ المعتمدة في ثوانٍ معدودة.</div>
-            </div>
-          );
-        }}
+      {/* 5. Services List (14.0s - 16.8s) */}
+      <Sprite start={14.0} end={16.8}>
+        {() => (
+          <CaptionCard
+            title="قارني أسعار المانيكير والباديكير المباشرة"
+            italicHighlight="واحجزي موعدكِ المؤكد فوراً مع الصالون."
+            start={14.0} end={16.8} time={time}
+          />
+        )}
       </Sprite>
 
-      {/* OUTRO CLOSER & BOUNCING ARROW (15.6s - 19.0s) */}
-      <Sprite start={15.6} end={19.0}>
+      {/* 6. Stylist select (17.2s - 20.0s) */}
+      <Sprite start={17.2} end={20.0}>
+        {() => (
+          <CaptionCard
+            title="واختاري خبيرتكِ المعتمدة في ثوانٍ"
+            italicHighlight="لتضمني خدمة مثالية تليق بجمالكِ."
+            start={17.2} end={20.0} time={time}
+          />
+        )}
+      </Sprite>
+
+      {/* 7. Booking success (20.4s - 22.4s) */}
+      <Sprite start={20.4} end={22.4}>
+        {() => (
+          <CaptionCard
+            title="احجزي موعدكِ المؤكد ووفري عناء البحث!"
+            italicHighlight="أورا غلو · رفيق جمالكِ الدائم."
+            start={20.4} end={22.4} time={time}
+          />
+        )}
+      </Sprite>
+
+      {/* OUTRO CLOSER & BOUNCING ARROW (21.6s - 25.0s) */}
+      <Sprite start={21.6} end={25.0}>
         {() => {
-          const op = fadeInOut(15.6, 19.0, .3, .3)(time);
-          const y  = interpolate([15.6, 16.4], [50, 0], Easing.easeOutCubic)(time);
+          const op = fadeInOut(21.6, 25.0, .2, .2)(time);
+          const y  = interpolate([21.6, 22.2], [40, 0], Easing.easeOutCubic)(time);
           return (
             <div dir="rtl" style={{ position:'absolute', bottom:64, right:30, left:30, textAlign:'center', opacity:op, transform:`translateY(${y}px)`, zIndex: 20, fontFamily:"'El Messiri','Cairo',sans-serif" }}>
-              <div style={{ fontSize:12, color:GOLD, fontWeight:800, letterSpacing:4, marginBottom:10 }}>ترقبي الإطلاق قريباً جداً · ٢٠٢٦</div>
-              <div style={{
+              <div style={{ fontSize:12, color:GOLD, fontWeight:800, letterSpacing:4, marginBottom:10, textShadow:'0 2px 8px rgba(0,0,0,0.6)' }}>ترقبي الإطلاق قريباً جداً · ٢٠٢٦</div>
+              <div className="shimmer-btn" style={{
                 display:'inline-flex', alignItems:'center', gap:8, padding:'14px 32px', borderRadius:28,
-                background:`linear-gradient(135deg, ${GOLD}, #B8891C)`, color:'#111',
-                fontWeight:900, fontSize:15.5, boxShadow:'0 10px 30px rgba(212,168,53,0.4)', cursor:'pointer'
+                color:'#111', fontWeight:900, fontSize:15.5, boxShadow:'0 10px 30px rgba(212,168,53,0.45)', cursor:'pointer'
               }}>
                 أورا غلو · ترقبينا قريباً
               </div>

@@ -3,11 +3,12 @@ const { useState, useRef, useEffect } = React;
 
 // ─── DATA ────────────────────────────────────────────────
 const SALONS = [
-  { id:1, name:'صالون ريا',        category:'قص الشعر',      catColor:'#16A77E', rating:4.99, reviews:536, address:'ش. الجليل 23، الناصرة',      fullAddress:'شارع الجليل 23، الناصرة، إسرائيل',       distance:'42.7كم', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80&fit=crop' },
-  { id:2, name:'بيوتي بار',        category:'مكياج',         catColor:'#4A8FE7', rating:4.72, reviews:894, address:'ش. الاستقلال 15، أم الفحم', fullAddress:'شارع الاستقلال 15، أم الفحم، إسرائيل',   distance:'42.7كم', img:'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&q=80&fit=crop' },
   { id:3, name:'نايل آرت',         category:'أظافر',         catColor:'#E05A6B', rating:4.99, reviews:536, address:'ش. الزهراء 8، باقة الغربية',fullAddress:'شارع الزهراء 8، باقة الغربية، إسرائيل',  distance:'42.7كم', img:'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop' },
-  { id:4, name:'ستايل كورنر',      category:'تصفيف',         catColor:'#9C59D9', rating:4.72, reviews:894, address:'ش. التحرير 45، سخنين',      fullAddress:'شارع التحرير 45، سخنين، إسرائيل',        distance:'42.7كم', img:'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&q=80&fit=crop' },
-  { id:5, name:'لوتس ويلنس',       category:'عناية بالبشرة', catColor:'#E87D3E', rating:4.80, reviews:90,  address:'ش. المقدسي 12، عكا',      fullAddress:'شارع المقدسي 12، عكا، إسرائيل',          distance:'42.7كم', img:'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80&fit=crop' },
+  { id:1, name:'صالون ريا',        category:'أظافر وشعر',      catColor:'#16A77E', rating:4.99, reviews:536, address:'ش. الجليل 23، الناصرة',      fullAddress:'شارع الجليل 23، الناصرة، إسرائيل',       distance:'42.7كم', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80&fit=crop' },
+  { id:2, name:'بيوتي بار',        category:'أظافر ومكياج',    catColor:'#4A8FE7', rating:4.72, reviews:894, address:'ش. الاستقلال 15، أم الفحم', fullAddress:'شارع الاستقلال 15، أم الفحم، إسرائيل',   distance:'42.7كم', img:'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&q=80&fit=crop' },
+  { id:4, name:'ستايل كورنر',      category:'أظافر وتصفيف',    catColor:'#9C59D9', rating:4.72, reviews:894, address:'ش. التحرير 45، سخنين',      fullAddress:'شارع التحرير 45، سخنين، إسرائيل',        distance:'42.7كم', img:'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&q=80&fit=crop' },
+  { id:5, name:'لوتس ويلنس',       category:'أظافر وسبا',      catColor:'#E87D3E', rating:4.80, reviews:90,  address:'ش. المقدسي 12، عكا',      fullAddress:'شارع المقدسي 12 \ عكا، إسرائيل',          distance:'42.7كم', img:'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80&fit=crop' },
+  { id:6, name:'جلامور لاند',      category:'أظافر',         catColor:'#E05A6B', rating:4.85, reviews:120, address:'ش. السلام 10، حيفا',    fullAddress:'شارع السلام 10، حيفا، إسرائيل',          distance:'42.7كم', img:'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80&fit=crop' },
 ];
 
 const SERVICES = [
@@ -15,6 +16,13 @@ const SERVICES = [
   { id:2, name:'تمليس الشعر',        price:800, duration:'٦٠ دقيقة', desc:'تمليس بالكيراتين لشعر ناعم ولامع.' },
   { id:3, name:'صباغة الشعر',        price:350, duration:'٩٠ دقيقة', desc:'علاج تلوين كامل بمنتجات فاخرة.' },
   { id:4, name:'علاج فروة الرأس',    price:220, duration:'٤٥ دقيقة', desc:'ترطيب عميق مع تدليك فروة الرأس.' },
+];
+
+const NAIL_SERVICES = [
+  { id:1, name:'مانيكير كلاسيكي',     price:80,  duration:'٣٠ دقيقة', desc:'تقليم وتنظيف الأظافر مع طلاء كلاسيكي راقٍ.' },
+  { id:2, name:'طلاء أظافر جل',       price:100, duration:'٤٥ دقيقة', desc:'طلاء جل يدوم طويلاً بألوان عصرية جذابة.' },
+  { id:3, name:'باديكير سبا كامل',    price:120, duration:'٦٠ دقيقة', desc:'عناية فائقة بالقدمين مع تدليك واسترخاء.' },
+  { id:4, name:'تصميم أظافر فني',     price:150, duration:'٦٠ دقيقة', desc:'رسم وتزيين الأظافر بتصاميم هندسية وذهبية.' },
 ];
 
 const PROFESSIONALS = [
@@ -36,7 +44,7 @@ const STORIES = [
 ];
 
 const PRODUCTS = [
-  { id:1, name:'كريم الأساس',  brand:'ستايل ستوديو', price:25.99, img:'https://images.unsplash.com/photo-1631730359585-cc6fb5e7e24c?w=400&h=300&q=80&fit=crop' },
+  { id:1, name:'كريم الأساس',  brand:'ستايل ستوديو', price:25.99, img:'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&q=80&fit=crop' },
   { id:2, name:'كونسيلر',      brand:'ستايل ستوديو', price:25.99, img:'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=300&q=80&fit=crop' },
   { id:3, name:'أحمر شفاه',    brand:'ستايل ستوديو', price:18.99, img:'https://images.unsplash.com/photo-1586495777744-4e6232bf8a5d?w=400&h=300&q=80&fit=crop' },
   { id:4, name:'ظلال العيون',  brand:'ستايل ستوديو', price:32.99, img:'https://images.unsplash.com/photo-1512207736890-6ffed8a84e8d?w=400&h=300&q=80&fit=crop' },
@@ -350,9 +358,13 @@ const FeedScreen = ({ onSalonClick, navTab, onNavigate, scrollY }) => {
 };
 
 // ─── STORE SCREEN (OLD HOME DIRECTORY CATALOG) ───────────
-const StoreScreen = ({ onSalonClick, navTab, onNavigate, scrollY }) => {
-  const [catFilter, setCatFilter] = useState('الكل');
+const StoreScreen = ({ onSalonClick, navTab, onNavigate, scrollY, initialFilter = 'الكل' }) => {
+  const [catFilter, setCatFilter] = useState(initialFilter);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    setCatFilter(initialFilter);
+  }, [initialFilter]);
 
   useEffect(() => {
     if (scrollRef.current && typeof scrollY === 'number') {
@@ -668,12 +680,24 @@ const MapBg = () => (
 );
 
 // ─── SEARCH ──────────────────────────────────────────────
-const SearchScreen = ({ onSalonClick, navTab, onNavigate, initialView='map', initialShowFilters=false }) => {
+const SearchScreen = ({ onSalonClick, navTab, onNavigate, initialView='map', initialShowFilters=false, initialFilterCats=[] }) => {
   const [view, setView] = useState(initialView);
   const [pickedSalon, setPickedSalon] = useState(initialView==='card' ? SALONS[0] : null);
   const [showFilters, setShowFilters] = useState(initialShowFilters);
-  const [filterCats, setFilterCats] = useState([]);
+  const [filterCats, setFilterCats] = useState(initialFilterCats);
   const toggleCat = c => setFilterCats(p=>p.includes(c)?p.filter(x=>x!==c):[...p,c]);
+
+  useEffect(() => {
+    setFilterCats(initialFilterCats);
+  }, [initialFilterCats]);
+
+  useEffect(() => {
+    setShowFilters(initialShowFilters);
+  }, [initialShowFilters]);
+
+  const activeSalons = filterCats.length > 0
+    ? SALONS.filter(s => filterCats.some(c => s.category.includes(c) || (c==='أظافر' && s.category==='أظافر')))
+    : SALONS;
 
   const pins = [
     { ...SALONS[0], px:210, py:235 },
@@ -781,8 +805,8 @@ const SearchScreen = ({ onSalonClick, navTab, onNavigate, initialView='map', ini
               </button>
             ))}
           </div>
-          <div style={{ fontSize:13, color:'#6B6B6B', marginBottom:8, textAlign:'right' }}>٤ أماكن قريبة</div>
-          {SALONS.map(s=>(
+          <div style={{ fontSize:13, color:'#6B6B6B', marginBottom:8, textAlign:'right' }}>{activeSalons.length} أماكن قريبة</div>
+          {activeSalons.map(s=>(
             <div key={s.id} onClick={()=>onSalonClick(s)} dir="rtl" style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 0', borderBottom:'1px solid #F5F5F5', cursor:'pointer' }}>
               <div style={{ width:72, height:72, borderRadius:10, overflow:'hidden', flexShrink:0, background:'#EEE' }}>
                 <img src={s.img} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
@@ -817,7 +841,7 @@ const SearchScreen = ({ onSalonClick, navTab, onNavigate, initialView='map', ini
 };
 
 // ─── FILTERS MODAL ───────────────────────────────────────
-const FILTER_CATS = ['قص الشعر','تمليس','علاج الوجه','مانيكير','باديكير','صباغة','ضفائر','تصفيف','عناية بالبشرة','تصحيح اللون'];
+const FILTER_CATS = ['قص الشعر','أظافر','علاج الوجه','مانيكير','باديكير','صباغة','ضفائر','تصفيف','عناية بالبشرة','تصحيح اللون'];
 
 const FiltersModal = ({ onClose, selected, onToggle }) => {
   const getFilterCatIcon = (cat, isSelected) => {
@@ -960,6 +984,7 @@ const HIGHLIGHTS = [
 const SalonProfileScreen = ({ salon, onBack, onBook, initialTab='services' }) => {
   const [tab, setTab] = useState(initialTab);
   const TABS = [['services','خدمات'],['posts','منشورات'],['store','متجر'],['details','تفاصيل']];
+  const salonServices = salon?.category === 'أظافر' ? NAIL_SERVICES : SERVICES;
 
   return (
     <RTL>
@@ -1020,7 +1045,7 @@ const SalonProfileScreen = ({ salon, onBack, onBook, initialTab='services' }) =>
 
         {tab==='services' && (
           <div style={{ padding:'12px 16px 28px' }}>
-            {SERVICES.map(svc=>(
+            {salonServices.map(svc=>(
               <div key={svc.id} dir="rtl" style={{ background:'#fff', borderRadius:14, padding:'16px', marginBottom:10, boxShadow:'0 1px 8px rgba(0,0,0,.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                 <div style={{ flex:1, textAlign:'right' }}>
                   <div style={{ fontSize:15, fontWeight:700, marginBottom:3 }}>{svc.name}</div>
@@ -1058,7 +1083,7 @@ const SalonProfileScreen = ({ salon, onBack, onBook, initialTab='services' }) =>
         {tab==='store' && (
           <div style={{ padding:'16px' }}>
             <div dir="rtl" style={{ display:'flex', gap:16, marginBottom:20, overflowX:'auto' }}>
-              {[['مكياج','https://images.unsplash.com/photo-1512207736890-6ffed8a84e8d?w=80&q=80&fit=crop'],['عناية','https://images.unsplash.com/photo-1556228720-195a672e8a03?w=80&q=80&fit=crop'],['شعر','https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=80&q=80&fit=crop&crop=face'],['جسم','https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=80&q=80&fit=crop'],['إكسسوار','https://images.unsplash.com/photo-1531895861208-cf5571d68a43?w=80&q=80&fit=crop']].map(([label,img])=>(
+              {[['مكياج','https://images.unsplash.com/photo-1512207736890-6ffed8a84e8d?w=80&q=80&fit=crop'],['عناية','https://images.unsplash.com/photo-1556228720-195a672e8a03?w=80&q=80&fit=crop'],['شعر','https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=80&q=80&fit=crop&crop=face'],['جسم','https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=80&q=80&fit=crop'],['إكسسوار','https://images.unsplash.com/photo-1590156546746-c588a113f9f2?w=80&q=80&fit=crop']].map(([label,img])=>(
                 <div key={label} style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:5, cursor:'pointer' }}>
                   <div style={{ width:52, height:52, borderRadius:'50%', overflow:'hidden', background:'#F5E8D0' }}>
                     <img src={img} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
